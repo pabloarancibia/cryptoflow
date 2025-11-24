@@ -60,6 +60,8 @@ coverage.xml
 .pytest_cache/
 cover/
 
+backtest.prof
+
 #Translations
 
 *.mo
