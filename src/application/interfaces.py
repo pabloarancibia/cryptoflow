@@ -1,4 +1,3 @@
-# src/application/interfaces.py
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from src.domain.entities import Order
@@ -37,4 +36,17 @@ class AbstractUnitOfWork(ABC):
     @abstractmethod
     def rollback(self):
         """Revert changes."""
+        pass
+
+
+# --- Exchange Adapter Port ---
+class ExchangeClient(ABC):
+    """
+    Interface for interacting with external crypto exchanges.
+    Clean Architecture: The Application layer defines this, Infrastructure implements it.
+    """
+
+    @abstractmethod
+    def get_current_price(self, symbol: str) -> float:
+        """Fetch real-time price for a symbol."""
         pass

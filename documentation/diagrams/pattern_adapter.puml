@@ -1,0 +1,65 @@
+@startuml
+!theme plain
+autonumber
+
+title "CryptoFlow: Adapter Pattern (Price Fetching)"
+
+' --- LAYERS ---
+box "Layer 4: Web (Entrypoint)" #f9f9f9
+    actor "User" as User
+    participant "FastAPI\nDependency Injector" as DI
+    participant "Router" as Router
+end box
+
+box "Layer 2: Application (The Brains)" #e6ffec
+    participant "PlaceOrder\nUseCase" as UC
+    participant "Interface:\nExchangeClient" as Port
+end box
+
+box "Layer 3: Infrastructure (The Tools)" #e1f5fe
+    participant "MockExchange\nAdapter" as Adapter
+end box
+
+' --- FLOW ---
+
+note over DI, Router: App Startup / Request Time
+
+User -> Router: POST /orders {symbol="BTC"...}
+
+activate Router
+    ' 1. Injection
+    Router -> DI: get_exchange_client()
+    activate DI
+        DI -> Adapter: Instantiate MockExchangeAdapter()
+        Adapter --> DI: Returns Adapter Instance
+        DI --> Router: Returns Adapter (as ExchangeClient)
+    deactivate DI
+
+    ' 2. Execution
+    Router -> UC: execute(data)
+    activate UC
+
+        note right of UC: 1. Validate Symbol (Registry)
+
+        ' 3. The Adapter Call
+        note right of UC: 2. "I need the current price"
+        UC -> Port: get_current_price("BTC")
+        activate Port
+            ' Polymorphism redirects the call to the concrete implementation
+            Port -> Adapter: get_current_price("BTC")
+            activate Adapter
+                Adapter -> Adapter: Generate Random Price\n(e.g., 60042.00)
+                Adapter --> Port: 60042.00
+            deactivate Adapter
+            Port --> UC: 60042.00
+        deactivate Port
+
+        note right of UC: 3. Create Order with Metadata\n{"market_price_snapshot": 60042.00}
+
+        UC --> Router: OrderResponse
+    deactivate UC
+
+    Router --> User: JSON (Created)
+deactivate Router
+
+@enduml

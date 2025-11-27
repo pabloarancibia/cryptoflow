@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from src.application.dtos import OrderCreate, OrderResponse
 from src.application.use_cases.place_order import PlaceOrderUseCase
 from src.infrastructure.uow import InMemoryUnitOfWork
+from src.infrastructure.adapters.mock_exchange import MockExchangeAdapter
 
 router = APIRouter()
 
@@ -11,8 +12,17 @@ router = APIRouter()
 def get_uow():
     return InMemoryUnitOfWork()
 
-def get_place_order_use_case(uow=Depends(get_uow)):
-    return PlaceOrderUseCase(uow)
+# Define the Dependency for the Adapter
+def get_exchange_client():
+    # In Week 4/5, we can swap this for BinanceExchangeAdapter(api_key=...)
+    return MockExchangeAdapter()
+
+# Inject both into the Use Case
+def get_place_order_use_case(
+        uow=Depends(get_uow),
+        exchange=Depends(get_exchange_client)
+):
+    return PlaceOrderUseCase(uow, exchange)
 
 @router.post("/orders", response_model=OrderResponse)
 def place_order(
