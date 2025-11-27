@@ -178,3 +178,5 @@ logs/
 #Kubernetes/Helm
 
 *.tgz
+
+full_project_context.txt
