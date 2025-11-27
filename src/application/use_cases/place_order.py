@@ -1,8 +1,8 @@
-# src/application/use_cases/place_order.py
 import uuid
 from src.domain.entities import Order
 from src.application.interfaces import AbstractUnitOfWork
 from src.application.dtos import OrderCreate, OrderResponse
+from src.domain.services import SymbolRegistry
 
 
 class PlaceOrderUseCase:
@@ -18,7 +18,10 @@ class PlaceOrderUseCase:
         4. Commit
         """
         with self.uow:
-            # 1. Create the Domain Entity (Pure Python)
+            # VALIDATION via Domain Service
+            SymbolRegistry.validate(data.symbol)
+
+            # Create the Domain Entity (Pure Python)
             # Business Logic: Generate ID here, not in DB
             new_order = Order(
                 order_id=str(uuid.uuid4()),
@@ -29,12 +32,12 @@ class PlaceOrderUseCase:
                 metadata=data.metadata
             )
 
-            # 2. Persist using the Repository inside the UoW
+            # Persist using the Repository inside the UoW
             # Note: We use .add(), not .save(). It's not in the DB yet.
             self.uow.orders.add(new_order)
 
-            # 3. Commit happens automatically on __exit__
+            # Commit happens automatically on __exit__
             # If line 2 failed, Commit would never happen.
 
-            # 4. Return DTO
+            # Return DTO
             return OrderResponse.model_validate(new_order)

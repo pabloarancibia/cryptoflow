@@ -1,7 +1,8 @@
-# src/domain/entities.py
 from abc import ABC, abstractmethod
 from typing import ClassVar, Optional, Dict, Any
 import copy
+
+from src.domain.exceptions import InvalidSymbolError
 
 # --- 1. FINANCIAL INSTRUMENTS (Polymorphic Assets) ---
 
@@ -12,7 +13,7 @@ class FinancialInstrument(ABC):
     def __init__(self, symbol: str):
         self.symbol = symbol.upper()
         if not self.validate_symbol():
-            raise ValueError(f"Invalid symbol format: {self.symbol}")
+            raise InvalidSymbolError(f"Invalid symbol format: {self.symbol}")
 
     @abstractmethod
     def validate_symbol(self) -> bool:

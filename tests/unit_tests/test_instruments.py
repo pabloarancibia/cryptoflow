@@ -1,5 +1,6 @@
 import pytest
 from src.domain.entities import CryptoAsset, FiatCurrency
+from src.domain.exceptions import InvalidSymbolError
 
 
 class TestFinancialInstruments:
@@ -23,7 +24,7 @@ class TestFinancialInstruments:
         assert self.usd.validate_symbol() is True
 
         # Invalid cases (using context manager for exceptions)
-        with pytest.raises(ValueError):
+        with pytest.raises(InvalidSymbolError):
             # Too long for Fiat (must be 3 chars)
             FiatCurrency("USDT")
 
