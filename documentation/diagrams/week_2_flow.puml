@@ -1,0 +1,77 @@
+@startuml
+!theme plain
+autonumber
+
+title "CryptoFlow: Place Order (Clean Architecture + Unit of Work)"
+
+' --- LAYERS DEFINITION ---
+box "Layer 4: Entrypoints (Web)" #f9f9f9
+    actor "User" as User
+    participant "FastAPI Router" as API
+end box
+
+box "Layer 2: Application (Orchestration)" #e6ffec
+    participant "PlaceOrderUseCase" as UC
+    participant "Abstract UoW" as UoW_Interface
+end box
+
+box "Layer 1: Domain (Pure Rules)" #fff4db
+    participant "Order Entity" as Entity
+end box
+
+box "Layer 3: Infrastructure (Adapters)" #e1f5fe
+    participant "InMemory\nUnitOfWork" as UoW_Impl
+    participant "InMemory\nRepository" as Repo
+end box
+
+' --- THE FLOW ---
+
+User -> API: POST /orders (JSON)
+note right of User: Input: {symbol: "BTC", qty: 1.0...}
+
+activate API
+    API -> API: Validate Pydantic DTO (OrderCreate)
+
+    API -> UC: execute(order_data)
+    activate UC
+
+        note right of UC: Start Transaction Boundary
+        UC -> UoW_Impl: __enter__() (Start Session)
+        activate UoW_Impl
+
+        ' 1. Domain Logic
+        UC -> Entity: Order(id, symbol, qty...)
+        activate Entity
+            Entity -> Entity: Validate Rules (Slots, Types)
+            Entity --> UC: new_order
+        deactivate Entity
+
+        ' 2. Staging the Data (Add, don't Save yet)
+        UC -> UoW_Impl: uow.orders.add(new_order)
+        UoW_Impl -> Repo: add(new_order)
+        activate Repo
+            Repo -> Repo: storage[id] = order
+            Repo --> UoW_Impl: void
+        deactivate Repo
+
+        ' 3. Automatic Commit (End of 'with' block)
+        UC -> UoW_Impl: __exit__()
+
+        alt Success (No Exception)
+            UoW_Impl -> UoW_Impl: commit()
+            note right of UoW_Impl: "Data flushed to DB/Memory"
+        else Failure (Exception raised)
+            UoW_Impl -> UoW_Impl: rollback()
+            note right of UoW_Impl: "Discard changes"
+        end
+        deactivate UoW_Impl
+
+        ' 4. Return DTO
+        UC -> UC: OrderResponse.model_validate(new_order)
+        UC --> API: OrderResponse DTO
+    deactivate UC
+
+    API --> User: HTTP 200 OK (JSON)
+deactivate API
+
+@enduml

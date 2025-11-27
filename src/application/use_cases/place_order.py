@@ -1,0 +1,40 @@
+# src/application/use_cases/place_order.py
+import uuid
+from src.domain.entities import Order
+from src.application.interfaces import AbstractUnitOfWork
+from src.application.dtos import OrderCreate, OrderResponse
+
+
+class PlaceOrderUseCase:
+    def __init__(self, uow: AbstractUnitOfWork):
+        # Dependency Injection: We depend on the Abstract UoW, not a specific DB
+        self.uow = uow
+
+    def execute(self, data: OrderCreate) -> OrderResponse:
+        """
+        1. Open Transaction
+        2. Create Domain Entity
+        3. Add to Repo
+        4. Commit
+        """
+        with self.uow:
+            # 1. Create the Domain Entity (Pure Python)
+            # Business Logic: Generate ID here, not in DB
+            new_order = Order(
+                order_id=str(uuid.uuid4()),
+                symbol=data.symbol,
+                quantity=data.quantity,
+                price=data.price,
+                side=data.side,
+                metadata=data.metadata
+            )
+
+            # 2. Persist using the Repository inside the UoW
+            # Note: We use .add(), not .save(). It's not in the DB yet.
+            self.uow.orders.add(new_order)
+
+            # 3. Commit happens automatically on __exit__
+            # If line 2 failed, Commit would never happen.
+
+            # 4. Return DTO
+            return OrderResponse.model_validate(new_order)

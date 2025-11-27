@@ -1,0 +1,1151 @@
+
+==================================================
+PROJECT STRUCTURE: /Users/pablo/Codes/CryptoFlow
+==================================================
+CryptoFlow/
+    pytest.ini
+    requirements.txt
+    full_project_context.txt
+    dump_project.py
+    README.md
+    .gitignore
+    setup.cfg
+    main.py
+    backtest.prof
+    documentation/
+        diagrams/
+            week_2_flow.puml
+    tests/
+        factories.py
+        unit_tests/
+            test_domain_rules.py
+            test_instruments.py
+        integration_tests/
+            test_api_routes.py
+    data/
+        market_data.csv
+    src/
+        simulation.py
+        config.py
+        tests/
+            test_transactions.py
+            test_stream.py
+        utils/
+            transactions.py
+        entrypoints/
+            api/
+                v1/
+                    routes.py
+        api/
+        application/
+            interfaces.py
+            dtos.py
+            use_cases/
+                place_order.py
+        infrastructure/
+            uow.py
+            repositories/
+                memory.py
+        domain/
+            market_data.py
+            exceptions.py
+            entities.py
+
+==================================================
+FILE CONTENTS
+==================================================
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/pytest.ini ---
+[pytest]
+pythonpath = .
+
+testpaths = tests
+
+# Look for files named test_*.py in subfolders
+python_files = test_*.py
+
+# Register markers (Optional, but good practice)
+markers =
+    unit_tests: Fast, isolated tests
+    integration_tests: Slower, full-stack tests
+
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/pytest.ini ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/requirements.txt ---
+#Core Framework & Web
+
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.6.0
+pydantic-settings>=2.1.0
+
+#Database & ORM
+
+sqlalchemy>=2.0.25
+alembic>=1.13.1
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.9
+
+#Caching & Queues
+
+redis>=5.0.1
+celery>=5.3.6
+flower>=2.0.1  # For monitoring Celery tasks
+
+#Data Analysis & Math
+
+pandas>=2.2.0
+numpy>=1.26.3
+
+#Testing
+
+pytest>=8.0.0
+pytest-asyncio>=0.23.5
+httpx>=0.26.0
+
+ faker>=38.2.0
+
+#Utilities
+
+python-dotenv>=1.0.1
+requests>=2.31.0
+email-validator>=2.1.0
+greenlet>=3.0.3  # Required for Async SQLAlchemy
+snakeviz>=2.2.2
+
+pydantic>=2.12.5
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/requirements.txt ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/full_project_context.txt ---
+
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/full_project_context.txt ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/dump_project.py ---
+import os
+
+# To RUN:
+# python dump_project.py > full_project_context.txt
+
+# --- CONFIGURATION ---
+# Folders to ignore (so we don't dump virtual environments or git history)
+IGNORE_DIRS = {'.git', '.idea', '.vscode', 'venv', '.venv', '__pycache__', 'htmlcov', '.pytest_cache', 'crypto_env'}
+# Files to ignore
+IGNORE_FILES = {'.DS_Store', 'poetry.lock', 'package-lock.json'}
+# Only read these extensions (add more if needed)
+ALLOWED_EXTENSIONS = {'.py', '.yml', '.yaml', '.ini', '.toml', '.md', '.txt', '.csv'}
+
+
+def print_tree(startpath):
+    print(f"\n{'=' * 50}")
+    print(f"PROJECT STRUCTURE: {startpath}")
+    print(f"{'=' * 50}")
+    for root, dirs, files in os.walk(startpath):
+        # Modify dirs in-place to skip ignored directories
+        dirs[:] = [d for d in dirs if d not in IGNORE_DIRS]
+
+        level = root.replace(startpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print(f'{indent}{os.path.basename(root)}/')
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            if f not in IGNORE_FILES:
+                print(f'{subindent}{f}')
+
+
+def dump_files(startpath):
+    print(f"\n{'=' * 50}")
+    print("FILE CONTENTS")
+    print(f"{'=' * 50}")
+
+    for root, dirs, files in os.walk(startpath):
+        # Skip ignored directories
+        dirs[:] = [d for d in dirs if d not in IGNORE_DIRS]
+
+        for file in files:
+            if file in IGNORE_FILES:
+                continue
+
+            # Filter by extension
+            _, ext = os.path.splitext(file)
+            if ext not in ALLOWED_EXTENSIONS:
+                continue
+
+            filepath = os.path.join(root, file)
+
+            print(f"\n\n--- START OF FILE: {filepath} ---")
+            try:
+                with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                    print(f.read())
+            except Exception as e:
+                print(f"[Error reading file: {e}]")
+            print(f"--- END OF FILE: {filepath} ---")
+
+
+if __name__ == "__main__":
+    current_dir = os.getcwd()
+    print_tree(current_dir)
+    dump_files(current_dir)
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/dump_project.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/README.md ---
+CryptoFlow — High-Frequency Trading Engine
+
+CryptoFlow is a modular, high-performance trading simulation system designed to demonstrate advanced Software Engineering principles in Python. The project emphasizes Clean Architecture, Gang of Four (GoF) Design Patterns, and strict Object-Oriented Programming (OOP) to create a scalable, transactional trading engine.
+
+🚀 Key Features
+
+Polymorphic Asset Modeling: Abstract handling of Crypto and Fiat currencies using strict OOP.
+
+Memory Optimization: Utilizes __slots__ and Generators for processing high-volume market data with low memory footprint.
+
+Pluggable Strategies: Strategy Pattern implementation allowing hot-swapping of algorithms (RSI, Moving Average).
+
+Resilient Architecture: Transactional safety via custom Context Managers and transactional rollbacks.
+
+Event-Driven: Asynchronous task processing using Celery, RabbitMQ/Redis, and Observer patterns.
+
+Cloud Native: Fully containerized with Docker Compose and ready for Kubernetes deployment.
+
+🛠 Tech Stack
+
+Language: Python 3.12+
+
+Web Framework: FastAPI
+
+Database: PostgreSQL with SQLAlchemy 2.0 (Async)
+
+Migrations: Alembic
+
+Caching & Locking: Redis
+
+Task Queue: Celery with RabbitMQ/Redis
+
+Infrastructure: Docker, Kubernetes (K8s), Terraform
+
+📂 Project Structure (Clean Architecture)
+
+cryptoflow/
+├── app/
+│   ├── domain/          # Enterprise business logic (Entities, Value Objects)
+│   ├── use_cases/       # Application business logic
+│   ├── interfaces/      # Adapters (API Routes, CLI)
+│   └── infrastructure/  # DB, External APIs, Redis implementation
+├── tests/               # Unit and Integration tests
+├── data/                # Local data storage (ignored by git)
+├── docker-compose.yml
+└── main.py
+
+
+⚡ Quick Start
+
+Prerequisites
+
+Python 3.12+
+
+Docker & Docker Compose
+
+Redis (for local dev)
+
+Local Setup
+
+Clone the repository
+
+git clone [https://github.com/yourusername/cryptoflow.git](https://github.com/yourusername/cryptoflow.git)
+cd cryptoflow
+
+
+Create Virtual Environment
+
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+
+Install Dependencies
+
+pip install -r requirements.txt
+
+
+Run the Server
+
+uvicorn main:app --reload
+
+
+Docker Setup
+
+docker-compose up --build
+
+
+🗺️ Implementation Roadmap
+
+Week 1: Deep Python Core & OOP
+
+[ ] Define FinancialInstrument ABC and subclasses (CryptoAsset, FiatCurrency).
+
+[ ] Implement Order class using __slots__ for memory optimization.
+
+[ ] Build MarketDataReader using Generators for CSV streaming.
+
+[ ] Create TransactionSession Context Manager for atomic operations.
+
+Week 2: Design Patterns & Architecture
+
+[ ] Implement Strategy Pattern (MovingAverageStrategy, RSIStrategy).
+
+[ ] Implement Factory Pattern (OrderFactory).
+
+[ ] Implement Adapter Pattern (BinanceAdapter, CoinbaseAdapter).
+
+[ ] Refactor FastAPI routes to use Dependency Injection.
+
+Week 3: Persistence & Caching
+
+[ ] Implement Repository Pattern (PortfolioRepository).
+
+[ ] Create Singleton Database Session Manager.
+
+[ ] Implement Proxy Caching (CachedPriceService) with Redis.
+
+[ ] Optimize SQL queries using EXPLAIN ANALYZE.
+
+Week 4: Concurrency & Queues
+
+[ ] Implement Observer Pattern (PriceSubject, EmailNotifier).
+
+[ ] Set up Producer-Consumer flow with RabbitMQ/Celery.
+
+[ ] Implement Distributed Locking (Redis/Threading) for wallet safety.
+
+Week 5: Cloud & DevOps
+
+[ ] Containerize services with Docker Compose.
+
+[ ] Configure CI pipelines (GitHub Actions) for unit tests.
+
+[ ] Provision storage using Terraform.
+
+Week 6: System Design & Kubernetes
+
+[ ] Create K8s deployment.yaml and service.yaml.
+
+[ ] Configure Load Balancing and Horizontal Scaling.
+
+[ ] Execute Blue/Green deployment strategy.
+
+🤝 Contributing
+
+Fork the Project
+
+Create your Feature Branch (git checkout -b feature/AmazingFeature)
+
+Commit your Changes (git commit -m 'Add some AmazingFeature')
+
+Push to the Branch (git push origin feature/AmazingFeature)
+
+Open a Pull Request
+
+📄 License
+
+Distributed under the MIT License.
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/README.md ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/main.py ---
+from fastapi import FastAPI
+from src.entrypoints.api.v1.routes import router as v1_router
+
+app = FastAPI(
+    title="CryptoFlow HFT Engine",
+    description="High-Frequency Trading Simulation with Clean Architecture",
+    version="1.0.0"
+)
+
+# Mount the routers
+app.include_router(v1_router, prefix="/api/v1", tags=["Trading"])
+
+@app.get("/")
+def health_check():
+    return {"status": "active", "system": "CryptoFlow"}
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/main.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/tests/factories.py ---
+import random
+import uuid
+from faker import Faker
+from src.domain.entities import Order
+
+fake = Faker()
+
+class OrderFactory:
+    """
+    Generates random data for testing.
+    Can produce Domain Entities (for Unit Tests) or Dictionaries (for API Tests).
+    """
+
+    @staticmethod
+    def _base_data(**kwargs):
+        """Internal method to generate raw random values."""
+        return {
+            "order_id": str(uuid.uuid4()),
+            "symbol": random.choice(["BTC", "ETH", "SOL", "XRP"]),
+            "quantity": round(random.uniform(0.1, 10.0), 4),
+            "price": round(random.uniform(1000.0, 60000.0), 2),
+            "side": random.choice(["BUY", "SELL"]),
+            "metadata": {"source": "test_factory", "random_tag": fake.word()},
+            **kwargs # Allow overriding specific fields
+        }
+
+    @classmethod
+    def build_entity(cls, **kwargs) -> Order:
+        """Returns a Domain Object (with __slots__)"""
+        data = cls._base_data(**kwargs)
+        # We don't send 'status' because __init__ sets it automatically
+        return Order(
+            order_id=data["order_id"],
+            symbol=data["symbol"],
+            quantity=data["quantity"],
+            price=data["price"],
+            side=data["side"],
+            metadata=data["metadata"]
+        )
+
+    @classmethod
+    def build_api_payload(cls, **kwargs) -> dict:
+        """Returns a JSON-compatible dictionary for API requests"""
+        data = cls._base_data(**kwargs)
+        # API input doesn't need order_id (generated by backend)
+        del data["order_id"]
+        return data
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/tests/factories.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/tests/unit_tests/test_domain_rules.py ---
+from tests.factories import OrderFactory
+
+
+def test_deep_copy_independence():
+    """Use Factory to generate a complex order, then test copying."""
+
+    # 1. Create random order
+    original = OrderFactory.build_entity(metadata={"strategy": "RSI"})
+
+    # 2. Deep Clone
+    clone = original.deep_clone()
+
+    # 3. Modify Clone
+    clone.metadata["strategy"] = "MACD"
+
+    # 4. Assert Original is safe
+    assert original.metadata["strategy"] == "RSI"
+    # Also verify random values match initially
+    assert original.price == clone.price
+    assert original.symbol == clone.symbol
+
+
+def test_order_slots_memory():
+    """Verify random orders adhere to __slots__."""
+    order = OrderFactory.build_entity()
+
+    try:
+        order.random_attribute = "Should Fail"
+        assert False, "Should have raised AttributeError"
+    except AttributeError:
+        assert True
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/tests/unit_tests/test_domain_rules.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/tests/unit_tests/test_instruments.py ---
+import pytest
+from src.domain.entities import CryptoAsset, FiatCurrency
+
+
+class TestFinancialInstruments:
+    """
+    Grouping all Financial Instrument tests in one class.
+    Pytest will automatically discover this class because it starts with 'Test'.
+    """
+
+    def setup_method(self):
+        """
+        Runs BEFORE every test method in this class.
+        Useful for resetting state or creating fresh objects.
+        """
+        self.btc = CryptoAsset("BTC")
+        self.usd = FiatCurrency("USD")
+
+    def test_validation_rules(self):
+        """Test that symbols are validated correctly."""
+        # Valid cases
+        assert self.btc.validate_symbol() is True
+        assert self.usd.validate_symbol() is True
+
+        # Invalid cases (using context manager for exceptions)
+        with pytest.raises(ValueError):
+            # Too long for Fiat (must be 3 chars)
+            FiatCurrency("USDT")
+
+    def test_quantization_logic(self):
+        """Test decimal precision logic."""
+        raw_amount = 1.55555555
+
+        # Access the objects created in setup_method using 'self'
+        assert self.btc.quantize(raw_amount) == 1.55555555  # Keeps 8 decimals
+        assert self.usd.quantize(raw_amount) == 1.56  # Rounds to 2 decimals
+
+    def test_fee_calculation(self):
+        """Test fee structures."""
+        qty = 10.0
+        price = 200.0
+
+        # BTC: 0.1% of volume (10 * 200 = 2000) -> Fee is 2.0
+        expected_btc_fee = (qty * price) * 0.001
+        assert self.btc.calculate_fee(qty, price) == expected_btc_fee
+
+        # USD: Flat fee regardless of volume
+        assert self.usd.calculate_fee(qty, price) == 1.00
+
+    def test_polymorphism_in_collection(self):
+        """Test iterating over different types."""
+        portfolio = [self.btc, self.usd]
+
+        results = []
+        for asset in portfolio:
+            # Polymorphism: calling same method name, getting different logic
+            results.append(asset.quantize(1.009))
+
+        # BTC (1.009) vs USD (1.01)
+        assert results == [1.009, 1.01]
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/tests/unit_tests/test_instruments.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/tests/integration_tests/test_api_routes.py ---
+from fastapi.testclient import TestClient
+from main import app
+from tests.factories import OrderFactory
+
+client = TestClient(app)
+
+
+def test_create_order_happy_path():
+    """Test a single random order creation."""
+    # 1. Generate random valid payload
+    payload = OrderFactory.build_api_payload(symbol="BTC")
+
+    # 2. Send Request
+    response = client.post("/api/v1/orders", json=payload)
+
+    # 3. Verify
+    assert response.status_code == 200
+    data = response.json()
+
+    # Check that response matches our random input
+    assert data["symbol"] == "BTC"
+    assert data["price"] == payload["price"]
+    assert data["status"] == "PENDING"
+    assert "order_id" in data
+
+
+def test_bulk_order_creation():
+    """Stress test with 5 random orders."""
+    for _ in range(5):
+        payload = OrderFactory.build_api_payload()  # Totally random
+        response = client.post("/api/v1/orders", json=payload)
+        assert response.status_code == 200
+
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/tests/integration_tests/test_api_routes.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/data/market_data.csv ---
+symbol,price,timestamp
+BTCUSD,60000,12:00:01
+BTCUSD,60001,12:00:02
+BTCUSD,59999,12:00:03
+
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/data/market_data.csv ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/simulation.py ---
+import cProfile
+import pstats
+from src.domain.market_data import MarketDataReader
+from src.domain.order import Order
+from src.config import MARKET_DATA_CSV
+
+
+def expensive_strategy_calculation(price):
+    """Simulates a heavy CPU-bound math operation (e.g., complex indicator)."""
+    total = 0
+    # This loop burns CPU cycles holding the GIL
+    for i in range(10000):
+        total += (price * i) ** 0.5
+    return total
+
+
+def run_backtest():
+    loader = MarketDataReader(MARKET_DATA_CSV)
+
+    print("Starting Backtest...")
+    for tick in loader.start_stream():
+        price = float(tick['price'])
+
+        # CPU Bound part
+        signal = expensive_strategy_calculation(price)
+
+        # Object creation part
+        if signal > 100:
+            order = Order(tick['timestamp'], "BTC", 1.0, price, "BUY")
+
+    print("Backtest Complete.")
+
+
+if __name__ == "__main__":
+    # We use cProfile to measure performance
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+    #
+    # run_backtest()
+    #
+    # profiler.disable()
+    # stats = pstats.Stats(profiler).sort_stats('cumtime')
+    # stats.print_stats(10)
+    cProfile.run('run_backtest()', 'backtest.prof')
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/simulation.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/config.py ---
+# src/config.py
+import os
+from pathlib import Path
+
+# 1. Get the project root directory dynamically
+# We are in src/config.py, so we go up two levels: src -> cryptoflow (root)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# 2. Define standard directories
+DATA_DIR = PROJECT_ROOT / "data"
+SRC_DIR = PROJECT_ROOT / "src"
+
+# 3. (Optional) Define specific file paths
+MARKET_DATA_CSV = DATA_DIR / "market_data.csv"
+
+# Debug print to ensure it works when you import it
+print(f"Project Root is: {PROJECT_ROOT}")
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/config.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/tests/test_transactions.py ---
+# tests/test_transactions.py
+import pytest
+from src.utils.transactions import TransactionSession, transactional
+
+
+def test_transaction_commit():
+    """Ensure session commits when no error occurs."""
+    with TransactionSession("TX-001") as session:
+        x = 1 + 1  # Do some work
+
+    assert session.status == "COMMITTED"
+
+
+def test_transaction_rollback():
+    """Ensure session rolls back when an error occurs."""
+    with pytest.raises(ValueError):
+        with TransactionSession("TX-002") as session:
+            raise ValueError("Not enough funds!")
+
+    # We can't easily check 'session.status' here because the context manager
+    # exited with an exception, but in a real DB mock, we would check
+    # if data was reverted. For now, we trust the flow control.
+
+
+def test_decorator_logic():
+    """Ensure the decorator actually runs the transaction logic."""
+
+    # We create a mock list to track side effects
+    actions = []
+
+    @transactional
+    def risky_operation(should_fail: bool):
+        actions.append("START")
+        if should_fail:
+            raise RuntimeError("Boom")
+        actions.append("END")
+
+    # Case 1: Success
+    risky_operation(should_fail=False)
+    assert actions == ["START", "END"]
+
+    # Case 2: Failure
+    with pytest.raises(RuntimeError):
+        risky_operation(should_fail=True)
+    # actions should contain "START" (it ran), but the wrapper
+    # would have handled the rollback internally.
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/tests/test_transactions.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/tests/test_stream.py ---
+import pytest
+from src.domain.market_data import MarketDataReader
+
+
+# pytest automatically detects the 'tmp_path' argument and injects a temporary directory path
+def test_stream_parses_csv_correctly(tmp_path):
+    # --- 1. SETUP: Create a fake CSV file ---
+
+    # Create a dummy file object inside the temporary directory
+    fake_csv_file = tmp_path / "fake_market_data.csv"
+
+    # Write some controlled test data into it
+    # We use a known price (100.0) to make asserting easy
+    fake_content = """symbol,price,timestamp
+BTCUSD,100.0,12:00:01
+ETHUSD,200.0,12:00:02
+"""
+
+    fake_csv_file.write_text(fake_content, encoding='utf-8')
+
+    # --- 2. EXECUTION: Run your code ---
+
+    # Pass the path of the fake file (convert to string for safety)
+    loader = MarketDataReader(str(fake_csv_file))
+    stream = loader.start_stream()
+
+    row1 = next(stream)
+    row2 = next(stream)
+
+    # --- 3. ASSERTION: Check the results ---
+
+    assert row1['symbol'] == 'BTCUSD'
+    assert row1['price'] == '100.0'
+
+    assert row2['symbol'] == 'ETHUSD'
+    assert row2['price'] == '200.0'
+
+    # Verify that the stream stops (raises StopIteration) after 2 lines
+    with pytest.raises(StopIteration):
+        next(stream)
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/tests/test_stream.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/utils/transactions.py ---
+# src/utils/transactions.py
+import functools
+import time
+from typing import Optional
+
+
+class TransactionSession:
+    """
+    Context Manager that simulates a database transaction.
+    If an exception occurs inside the 'with' block, it rolls back.
+    """
+
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+        self.active = False
+        self.status = "PENDING"
+
+    def __enter__(self):
+        """Called when entering the 'with' block."""
+        print(f"--- [Session {self.session_id}] START: Locking Resources ---")
+        self.active = True
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Called when exiting the 'with' block.
+        exc_type is not None if an error occurred.
+        """
+        if exc_type:
+            self.rollback(exc_val)
+            # Return True to suppress the exception (optional),
+            # or False to let it bubble up (usually better for APIs).
+            return False
+        else:
+            self.commit()
+
+    def commit(self):
+        self.status = "COMMITTED"
+        print(f"--- [Session {self.session_id}] COMMIT: Changes saved ---")
+
+    def rollback(self, error):
+        self.status = "ROLLED_BACK"
+        print(f"!!! [Session {self.session_id}] ROLLBACK: Reverting due to error: {error} !!!")
+
+
+# --- The Advanced Decorator ---
+
+def transactional(func):
+    """
+    Decorator that wraps a function in a TransactionSession.
+    Uses functools.wraps to keep the original function's name/docstring.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # We generate a fake session ID for this example
+        current_time = int(time.time())
+        session_id = f"TX-{current_time}"
+
+        with TransactionSession(session_id):
+            return func(*args, **kwargs)
+
+    return wrapper
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/utils/transactions.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/entrypoints/api/v1/routes.py ---
+# src/entrypoints/api/v1/routes.py
+from fastapi import APIRouter, Depends, HTTPException
+from src.application.dtos import OrderCreate, OrderResponse
+from src.application.use_cases.place_order import PlaceOrderUseCase
+from src.infrastructure.uow import InMemoryUnitOfWork
+
+router = APIRouter()
+
+# 1. Dependency Injection Setup
+# In a real app, this might come from a container, but a function works fine.
+def get_uow():
+    return InMemoryUnitOfWork()
+
+def get_place_order_use_case(uow=Depends(get_uow)):
+    return PlaceOrderUseCase(uow)
+
+# 2. The Endpoint
+@router.post("/orders", response_model=OrderResponse)
+def place_order(
+    order_data: OrderCreate,
+    use_case: PlaceOrderUseCase = Depends(get_place_order_use_case)
+):
+    try:
+        # The Controller is THIN. It just calls the Use Case.
+        return use_case.execute(order_data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/entrypoints/api/v1/routes.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/application/interfaces.py ---
+# src/application/interfaces.py
+from abc import ABC, abstractmethod
+from typing import Optional, List
+from src.domain.entities import Order
+
+# 1. The Repository Port
+# The Use Case says: "I need a place to store Orders. I don't care if it's SQL or RAM."
+class OrderRepository(ABC):
+    @abstractmethod
+    def add(self, order: Order) -> None:
+        """Mark an order to be saved."""
+        pass
+
+    @abstractmethod
+    def get_by_id(self, order_id: str) -> Optional[Order]:
+        pass
+
+# 2. The Unit of Work Port
+# The Use Case says: "I need a transaction boundary."
+class AbstractUnitOfWork(ABC):
+    orders: OrderRepository  # The UoW provides access to the Repos
+
+    def __enter__(self) -> 'AbstractUnitOfWork':
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self.commit()
+        else:
+            self.rollback()
+
+    @abstractmethod
+    def commit(self):
+        """Flush changes to persistence."""
+        pass
+
+    @abstractmethod
+    def rollback(self):
+        """Revert changes."""
+        pass
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/application/interfaces.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/application/dtos.py ---
+# src/application/dtos.py
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+from typing import Optional, Dict, Any
+
+# 1. Base Schema (Shared fields)
+class OrderBase(BaseModel):
+    symbol: str = Field(..., min_length=3, max_length=5, description="Asset Symbol (e.g. BTC)")
+    quantity: float = Field(..., description="Amount to trade")
+    price: float = Field(..., description="Limit price")
+    side: str = Field(..., description="BUY or SELL")
+
+# 2. Input Schema (DTO for POST /orders)
+class OrderCreate(OrderBase):
+    # Optional metadata user might send
+    metadata: Optional[Dict[str, Any]] = None
+
+    @field_validator('quantity', 'price')
+    @classmethod
+    def check_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError('Must be positive value')
+        return v
+
+    @field_validator('side')
+    @classmethod
+    def check_side(cls, v: str) -> str:
+        s = v.upper()
+        if s not in ('BUY', 'SELL'):
+            raise ValueError('Side must be BUY or SELL')
+        return s
+
+# 3. Output Schema (DTO for returning data)
+class OrderResponse(OrderBase):
+    order_id: str
+    status: str
+    metadata: Dict[str, Any]
+
+    # Pydantic V2 Config:
+    # 'from_attributes=True' allows Pydantic to read data from
+    # your custom class (Order) attributes, not just dicts.
+    model_config = ConfigDict(from_attributes=True)
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/application/dtos.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/application/use_cases/place_order.py ---
+# src/application/use_cases/place_order.py
+import uuid
+from src.domain.entities import Order
+from src.application.interfaces import AbstractUnitOfWork
+from src.application.dtos import OrderCreate, OrderResponse
+
+
+class PlaceOrderUseCase:
+    def __init__(self, uow: AbstractUnitOfWork):
+        # Dependency Injection: We depend on the Abstract UoW, not a specific DB
+        self.uow = uow
+
+    def execute(self, data: OrderCreate) -> OrderResponse:
+        """
+        1. Open Transaction
+        2. Create Domain Entity
+        3. Add to Repo
+        4. Commit
+        """
+        with self.uow:
+            # 1. Create the Domain Entity (Pure Python)
+            # Business Logic: Generate ID here, not in DB
+            new_order = Order(
+                order_id=str(uuid.uuid4()),
+                symbol=data.symbol,
+                quantity=data.quantity,
+                price=data.price,
+                side=data.side,
+                metadata=data.metadata
+            )
+
+            # 2. Persist using the Repository inside the UoW
+            # Note: We use .add(), not .save(). It's not in the DB yet.
+            self.uow.orders.add(new_order)
+
+            # 3. Commit happens automatically on __exit__
+            # If line 2 failed, Commit would never happen.
+
+            # 4. Return DTO
+            return OrderResponse.model_validate(new_order)
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/application/use_cases/place_order.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/infrastructure/uow.py ---
+# src/infrastructure/uow.py
+from src.application.interfaces import AbstractUnitOfWork
+from src.infrastructure.repositories.memory import InMemoryOrderRepository
+
+class InMemoryUnitOfWork(AbstractUnitOfWork):
+    def __init__(self):
+        self.orders = InMemoryOrderRepository()
+        self.committed = False
+
+    def commit(self):
+        self.committed = True
+        print("--- [InMemoryDB] COMMIT: Data flushed ---")
+
+    def rollback(self):
+        self.committed = False
+        print("--- [InMemoryDB] ROLLBACK ---")
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/infrastructure/uow.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/infrastructure/repositories/memory.py ---
+# src/infrastructure/repositories/memory.py
+from typing import Dict, Optional
+from src.domain.entities import Order
+from src.application.interfaces import OrderRepository
+
+class InMemoryOrderRepository(OrderRepository):
+    def __init__(self):
+        self._storage: Dict[str, Order] = {}
+
+    def add(self, order: Order) -> None:
+        self._storage[order.order_id] = order
+
+    def get_by_id(self, order_id: str) -> Optional[Order]:
+        return self._storage.get(order_id)
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/infrastructure/repositories/memory.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/domain/market_data.py ---
+import csv
+import time
+from typing import Generator, Dict
+
+
+class MarketDataReader:
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+
+    def start_stream(self) -> Generator[Dict, None, None]:
+        """
+        Yields market data row by row.
+        This acts as a 'Lazy Loading' engine.
+        """
+        with open(self.file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                # Simulate network latency or processing time if needed
+                # time.sleep(0.01)
+
+                # Yield pauses execution here and returns the row
+                # Next time we call next(), it resumes right here
+                yield row
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/domain/market_data.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/domain/exceptions.py ---
+
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/domain/exceptions.py ---
+
+
+--- START OF FILE: /Users/pablo/Codes/CryptoFlow/src/domain/entities.py ---
+# src/domain/entities.py
+from abc import ABC, abstractmethod
+from typing import ClassVar, Optional, Dict, Any
+import copy
+
+# --- 1. FINANCIAL INSTRUMENTS (Polymorphic Assets) ---
+
+class FinancialInstrument(ABC):
+    """Abstract Base Class for all tradable assets."""
+    instrument_type: ClassVar[str] = "GENERIC"
+
+    def __init__(self, symbol: str):
+        self.symbol = symbol.upper()
+        if not self.validate_symbol():
+            raise ValueError(f"Invalid symbol format: {self.symbol}")
+
+    @abstractmethod
+    def validate_symbol(self) -> bool:
+        pass
+
+    @abstractmethod
+    def calculate_valuation(self, amount: float, current_price: float) -> float:
+        pass
+
+    @abstractmethod
+    def quantize(self, amount: float) -> float:
+        """Round the amount to the asset's specific precision."""
+        pass
+
+    @abstractmethod
+    def calculate_fee(self, quantity: float, price: float) -> float:
+        pass
+
+    def __repr__(self):
+        return f"<{self.instrument_type}: {self.symbol}>"
+
+
+class CryptoAsset(FinancialInstrument):
+    instrument_type = "CRYPTO"
+    PRECISION = 8
+    FEE_RATE = 0.001  # 0.1%
+
+    def validate_symbol(self) -> bool:
+        return 3 <= len(self.symbol) <= 5
+
+    def calculate_valuation(self, amount: float, current_price: float) -> float:
+        return amount * current_price
+
+    def quantize(self, amount: float) -> float:
+        return round(amount, self.PRECISION)
+
+    def calculate_fee(self, quantity: float, price: float) -> float:
+        return (quantity * price) * self.FEE_RATE
+
+
+class FiatCurrency(FinancialInstrument):
+    instrument_type = "FIAT"
+    PRECISION = 2
+    FLAT_FEE = 1.00
+
+    def validate_symbol(self) -> bool:
+        return len(self.symbol) == 3
+
+    def calculate_valuation(self, amount: float, current_price: float) -> float:
+        return amount * current_price
+
+    def quantize(self, amount: float) -> float:
+        return round(amount, self.PRECISION)
+
+    def calculate_fee(self, quantity: float, price: float) -> float:
+        return self.FLAT_FEE
+
+
+# --- 2. ORDER ENTITY (Memory Optimized) ---
+
+class Order:
+    """
+    Represents a buy/sell order.
+    Uses __slots__ for memory optimization in HFT scenarios.
+    """
+    __slots__ = ['order_id', 'symbol', 'quantity', 'price', 'side', 'status', 'metadata']
+
+    def __init__(self,
+                 order_id: str,
+                 symbol: str,
+                 quantity: float,
+                 price: float,
+                 side: str,
+                 metadata: Optional[Dict[str, Any]] = None):
+        self.order_id = order_id
+        self.symbol = symbol
+        self.quantity = quantity
+        self.price = price
+        self.side = side
+        self.status = "PENDING"
+        self.metadata = metadata if metadata is not None else {}
+
+
+    def shallow_clone(self):
+        return copy.copy(self)
+
+    def deep_clone(self):
+        return copy.deepcopy(self)
+
+    def __repr__(self):
+        return f"Order({self.order_id}, {self.symbol}, {self.side}, {self.quantity} @ {self.price})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Order):
+            return NotImplemented
+        return self.order_id == other.order_id
+
+    def __hash__(self):
+        return hash(self.order_id)
+--- END OF FILE: /Users/pablo/Codes/CryptoFlow/src/domain/entities.py ---
