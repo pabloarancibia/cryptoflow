@@ -1,0 +1,86 @@
+@startuml
+!theme plain
+autonumber
+skinparam ParticipantPadding 10
+skinparam BoxPadding 10
+
+title "CryptoFlow: Dynamic Logic System Flow (Adapter + Factory + Strategy)"
+
+box "Layer 4: Entrypoints (Web)" #F9F9F9
+    actor "Client" as User
+    participant "FastAPI Router" as Router
+end box
+
+box "Layer 2: Application (Orchestration)" #E6FFEC
+    participant "AnalyzeMarket\nUseCase" as UC
+    participant "<<Interface>>\nExchangeClient" as AdapterPort
+    participant "StrategyFactory" as Factory
+end box
+
+box "Layer 3: Infrastructure (Data)" #E1F5FE
+    participant "MockExchangeAdapter" as AdapterImpl
+end box
+
+box "Layer 1: Domain (Business Logic)" #FFF4DB
+    participant "<<Interface>>\nTradingStrategy" as StrategyPort
+    participant "MovingAverageStrategy\n(Concrete)" as SMA
+end box
+
+' --- FLOW START ---
+note over Router: **Request Time:**\nUser asks for "SMA" strategy on "BTC".
+
+User -> Router: POST /analyze\n{symbol="BTC", strategy="SMA", ...}
+activate Router
+    Router -> UC: execute(request_dto)
+    activate UC
+
+        ' === ADAPTER PATTERN ===
+        group 1. Adapter Pattern (Fetching Data)
+            note right of UC: The Use Case needs data but\ndoesn't know the source.
+            UC -> AdapterPort: get_price_history("BTC")
+            activate AdapterPort
+                ' Polymorphism jumps to implementation
+                AdapterPort -> AdapterImpl: get_price_history("BTC")
+                activate AdapterImpl
+                    AdapterImpl -> AdapterImpl: Generate Fake History\n[10, 11, 12, 15]
+                AdapterImpl --> AdapterPort: returns list[floats]
+                deactivate AdapterImpl
+            AdapterPort --> UC: returns list[floats]
+            deactivate AdapterPort
+        end group
+
+        ' === FACTORY PATTERN ===
+        group 2. Factory Pattern (Creating Logic)
+            note right of UC: The Use Case needs to turn the\nstring "SMA" into executable code.
+            UC -> Factory: create("SMA", params={window:5})
+            activate Factory
+                Factory -> Factory: "SMA" maps to\nMovingAverageStrategy class
+                Factory -> SMA: new(window=5)
+                activate SMA
+                SMA --> Factory: returns instance
+                deactivate SMA
+            Factory --> UC: returns TradingStrategy instance
+            deactivate Factory
+        end group
+
+        ' === STRATEGY PATTERN ===
+        group 3. Strategy Pattern (Executing Logic)
+            note right of UC: The Use Case runs the generic\ncontract, unaware of the specific math.
+            UC -> StrategyPort: calculate_signal(history_data)
+            activate StrategyPort
+                ' Polymorphism jumps to implementation
+                StrategyPort -> SMA: calculate_signal(...)
+                activate SMA
+                    SMA -> SMA: Run SMA Math:\n(Last Price > Average?)
+                SMA --> StrategyPort: returns "BUY"
+                deactivate SMA
+            StrategyPort --> UC: returns "BUY"
+            deactivate StrategyPort
+        end group
+
+        UC -> UC: Build Response DTO
+        UC --> Router: AnalysisResponse JSON
+    deactivate UC
+Router --> User: HTTP 200 OK\n{"symbol": "BTC", "signal": "BUY"}
+deactivate Router
+@enduml

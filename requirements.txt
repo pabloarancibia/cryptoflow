@@ -38,3 +38,4 @@ requests>=2.31.0
 email-validator>=2.1.0
 greenlet>=3.0.3  # Required for Async SQLAlchemy
 snakeviz>=2.2.2
+structlog>=25.5.0

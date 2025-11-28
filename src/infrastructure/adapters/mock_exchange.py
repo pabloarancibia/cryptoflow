@@ -1,4 +1,6 @@
 import random
+from typing import List
+
 from src.application.interfaces import ExchangeClient
 
 
@@ -24,3 +26,17 @@ class MockExchangeAdapter(ExchangeClient):
         # Add some noise (+- 1%)
         noise = random.uniform(-0.01, 0.01)
         return round(base * (1 + noise), 2)
+
+    def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
+        """Generates a fake price history trend."""
+        base_price = 50000.0
+        history = []
+
+        # Walk random steps to create a realistic-looking chart
+        current = base_price
+        for _ in range(limit):
+            change = random.uniform(-50, 50)  # Random walk
+            current += change
+            history.append(round(current, 2))
+
+        return history

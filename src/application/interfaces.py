@@ -50,3 +50,8 @@ class ExchangeClient(ABC):
     def get_current_price(self, symbol: str) -> float:
         """Fetch real-time price for a symbol."""
         pass
+
+    @abstractmethod
+    def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
+        """Fetch historical close prices for analysis."""
+        pass

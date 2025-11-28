@@ -1,9 +1,11 @@
 import uuid
+import structlog
 from src.domain.entities import Order
 from src.application.interfaces import AbstractUnitOfWork, ExchangeClient
 from src.application.dtos import OrderCreate, OrderResponse
 from src.domain.services import SymbolRegistry
 
+logger = structlog.get_logger()
 
 class PlaceOrderUseCase:
     def __init__(self, uow: AbstractUnitOfWork, exchange: ExchangeClient):
@@ -18,6 +20,8 @@ class PlaceOrderUseCase:
         3. Add to Repo
         4. Commit
         """
+        logger.info("placing_order", symbol=data.symbol, side=data.side, qty=data.quantity)
+
         with self.uow:
             # VALIDATION via Domain Service
             SymbolRegistry.validate(data.symbol)
@@ -44,6 +48,9 @@ class PlaceOrderUseCase:
             # Persist using the Repository inside the UoW
             # Note: We use .add(), not .save(). It's not in the DB yet.
             self.uow.orders.add(new_order)
+
+            # request_id auto-added by middleware
+            logger.info("order_created", order_id=new_order.order_id, price=new_order.price)
 
             # Commit happens automatically on __exit__
             # If line 2 failed, Commit would never happen.
