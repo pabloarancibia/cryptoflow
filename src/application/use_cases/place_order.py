@@ -22,7 +22,7 @@ class PlaceOrderUseCase:
             # VALIDATION via Domain Service
             SymbolRegistry.validate(data.symbol)
 
-            # Adapter to get external data
+            # Use the Adapter to get external data
             # We fetch the "Real" market price to store as metadata or validate spread
             market_price = self.exchange.get_current_price(data.symbol)
 
