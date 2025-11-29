@@ -1,6 +1,10 @@
 # src/infrastructure/uow.py
+import structlog
+
 from src.application.interfaces import AbstractUnitOfWork
 from src.infrastructure.repositories.memory import InMemoryOrderRepository
+
+logger = structlog.getLogger()
 
 class InMemoryUnitOfWork(AbstractUnitOfWork):
     def __init__(self):
@@ -9,8 +13,8 @@ class InMemoryUnitOfWork(AbstractUnitOfWork):
 
     def commit(self):
         self.committed = True
-        print("--- [InMemoryDB] COMMIT: Data flushed ---")
+        logger.info("uow_commit", db="memory", status="flushed")
 
     def rollback(self):
         self.committed = False
-        print("--- [InMemoryDB] ROLLBACK ---")
+        logger.warning("uow_rollback", db="memory")

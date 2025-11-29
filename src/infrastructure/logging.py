@@ -9,7 +9,7 @@ def configure_logging():
     Includes timestamps, log levels, and context variables (like request_id).
     """
 
-    # 1. shared processors (formatting steps)
+    # shared processors (formatting steps)
     processors = [
         structlog.contextvars.merge_contextvars,  # Add request_id if available
         structlog.processors.add_log_level,
@@ -19,15 +19,14 @@ def configure_logging():
         structlog.processors.JSONRenderer()  # OUTPUT AS JSON
     ]
 
-    # 2. Configure structlog
+    # Configure structlog
     structlog.configure(
         processors=processors,
         logger_factory=structlog.PrintLoggerFactory(),
         cache_logger_on_first_use=True,
     )
 
-    # 3. (Optional) Redirect standard library logging to structlog
-    # This captures logs from Uvicorn/FastAPI and formats them as JSON too.
+    # Configure Standard Library (Uvicorn uses this)
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
