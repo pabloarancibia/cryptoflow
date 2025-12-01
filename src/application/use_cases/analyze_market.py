@@ -17,10 +17,10 @@ class AnalyzeMarketUseCase:
     def __init__(self, exchange: ExchangeClient):
         self.exchange = exchange
 
-    def execute(self, request: AnalysisRequest) -> AnalysisResponse:
+    async def execute(self, request: AnalysisRequest) -> AnalysisResponse:
         # 1. Fetch History (Adapter)
         # We need enough data for the strategy (e.g., 20 candles)
-        history = self.exchange.get_price_history(request.symbol, limit=20)
+        history = await self.exchange.get_price_history(request.symbol, limit=20)
         current_price = history[-1]
 
         # 2. Instantiate Strategy (Factory)

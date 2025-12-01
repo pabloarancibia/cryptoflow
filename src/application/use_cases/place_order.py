@@ -13,7 +13,7 @@ class PlaceOrderUseCase:
         self.uow = uow
         self.exchange = exchange
 
-    def execute(self, data: OrderCreate) -> OrderResponse:
+    async def execute(self, data: OrderCreate) -> OrderResponse:
         """
         1. Open Transaction
         2. Create Domain Entity
@@ -22,13 +22,13 @@ class PlaceOrderUseCase:
         """
         logger.info("placing_order", symbol=data.symbol, side=data.side, qty=data.quantity)
 
-        with self.uow:
+        async with self.uow:
             # VALIDATION via Domain Service
             SymbolRegistry.validate(data.symbol)
 
             # Use the Adapter to get external data
             # We fetch the "Real" market price to store as metadata or validate spread
-            market_price = self.exchange.get_current_price(data.symbol)
+            market_price = await self.exchange.get_current_price(data.symbol)
 
             if data.metadata is None:
                 data.metadata = {}
@@ -47,7 +47,7 @@ class PlaceOrderUseCase:
 
             # Persist using the Repository inside the UoW
             # Note: We use .add(), not .save(). It's not in the DB yet.
-            self.uow.orders.add(new_order)
+            await self.uow.orders.add(new_order)
 
             # request_id auto-added by middleware
             logger.info("order_created", order_id=new_order.order_id, price=new_order.price)

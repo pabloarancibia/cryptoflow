@@ -6,12 +6,12 @@ from src.domain.entities import Order
 # The Use Case says: "I need a place to store Orders. I don't care if it's SQL or RAM."
 class OrderRepository(ABC):
     @abstractmethod
-    def add(self, order: Order) -> None:
+    async def add(self, order: Order) -> None:
         """Mark an order to be saved."""
         pass
 
     @abstractmethod
-    def get_by_id(self, order_id: str) -> Optional[Order]:
+    async def get_by_id(self, order_id: str) -> Optional[Order]:
         pass
 
 # 2. The Unit of Work Port
@@ -19,22 +19,22 @@ class OrderRepository(ABC):
 class AbstractUnitOfWork(ABC):
     orders: OrderRepository  # The UoW provides access to the Repos
 
-    def __enter__(self) -> 'AbstractUnitOfWork':
+    async def __aenter__(self) -> 'AbstractUnitOfWork':
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
-            self.commit()
+            await self.commit()
         else:
-            self.rollback()
+            await self.rollback()
 
     @abstractmethod
-    def commit(self):
+    async def commit(self):
         """Flush changes to persistence."""
         pass
 
     @abstractmethod
-    def rollback(self):
+    async def rollback(self):
         """Revert changes."""
         pass
 
@@ -47,11 +47,11 @@ class ExchangeClient(ABC):
     """
 
     @abstractmethod
-    def get_current_price(self, symbol: str) -> float:
+    async def get_current_price(self, symbol: str) -> float:
         """Fetch real-time price for a symbol."""
         pass
 
     @abstractmethod
-    def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
+    async def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
         """Fetch historical close prices for analysis."""
         pass

@@ -1,4 +1,3 @@
-# src/infrastructure/uow.py
 import structlog
 
 from src.application.interfaces import AbstractUnitOfWork

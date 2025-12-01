@@ -4,13 +4,13 @@ from src.application.use_cases.place_order import PlaceOrderUseCase
 from src.application.use_cases.analyze_market import AnalysisRequest, AnalysisResponse, AnalyzeMarketUseCase
 from src.infrastructure.uow import InMemoryUnitOfWork
 from src.infrastructure.adapters.mock_exchange import MockExchangeAdapter
+from src.infrastructure.uow_postgres import SqlAlchemyUnitOfWork
 
 router = APIRouter()
 
 # Dependency Injection Setup
-# In a real app, this might come from a container, but a function works fine.
 def get_uow():
-    return InMemoryUnitOfWork()
+    return SqlAlchemyUnitOfWork()
 
 # Define the Dependency for the Adapter
 def get_exchange_client():
@@ -30,16 +30,16 @@ def get_analyze_market_use_case(
     return AnalyzeMarketUseCase(exchange)
 
 @router.post("/orders", response_model=OrderResponse)
-def place_order(
+async def place_order(
     order_data: OrderCreate,
     use_case: PlaceOrderUseCase = Depends(get_place_order_use_case)
 ):
 
     # If logic fails, the Global Handler catches it automatically.
-    return use_case.execute(order_data)
+    return await use_case.execute(order_data)
 
 @router.post("/analyze", response_model=AnalysisResponse)
-def analyze_market(
+async def analyze_market(
     request: AnalysisRequest,
     use_case: AnalyzeMarketUseCase = Depends(get_analyze_market_use_case)
 ):
@@ -47,4 +47,4 @@ def analyze_market(
     Dynamic Analysis Endpoint.
     User chooses the strategy at runtime!
     """
-    return use_case.execute(request)
+    return await use_case.execute(request)

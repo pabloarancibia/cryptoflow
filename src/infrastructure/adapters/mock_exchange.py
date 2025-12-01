@@ -1,3 +1,4 @@
+import asyncio
 import random
 from typing import List
 
@@ -9,8 +10,9 @@ class MockExchangeAdapter(ExchangeClient):
     Simulates an external exchange (Binance/Coinbase).
     """
 
-    def get_current_price(self, symbol: str) -> float:
-        # Simulate network latency? time.sleep(0.1)
+    async def get_current_price(self, symbol: str) -> float:
+        # Simulate network latency?
+        await asyncio.sleep(0.01)
 
         # Return a consistent-ish fake price based on symbol length to not be totally random
         # or just random for chaos. Let's do random ranges.
@@ -27,7 +29,7 @@ class MockExchangeAdapter(ExchangeClient):
         noise = random.uniform(-0.01, 0.01)
         return round(base * (1 + noise), 2)
 
-    def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
+    async def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
         """Generates a fake price history trend."""
         base_price = 50000.0
         history = []
