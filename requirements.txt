@@ -7,9 +7,9 @@ pydantic-settings>=2.1.0
 
 #Database & ORM
 
-sqlalchemy>=2.0.25
-alembic>=1.13.1
-asyncpg>=0.29.0
+sqlalchemy>=2.0.44
+alembic>=1.17.2
+asyncpg>=0.31.0
 psycopg2-binary>=2.9.9
 
 #Caching & Queues
@@ -36,6 +36,6 @@ httpx>=0.26.0
 python-dotenv>=1.0.1
 requests>=2.31.0
 email-validator>=2.1.0
-greenlet>=3.0.3  # Required for Async SQLAlchemy
+greenlet>=3.2.4  # Required for Async SQLAlchemy
 snakeviz>=2.2.2
 structlog>=25.5.0

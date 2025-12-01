@@ -1,0 +1,62 @@
+@startuml
+!theme plain
+hide circle
+skinparam classAttributeIconSize 0
+
+title "CryptoFlow: ORM Schema Mapping (Python <--> SQL)"
+
+' --- PYTHON SIDE ---
+package "src.infrastructure.models.py" #E6FFEC {
+    class Base <<DeclarativeBase>> {
+        (SQLAlchemy Parent)
+    }
+
+    class OrderModel {
+        __tablename__ = "orders"
+        .. Primary Key ..
+        + order_id : Mapped[str]
+        .. Core Fields ..
+        + symbol : Mapped[str]
+        + quantity : Mapped[float]
+        + price : Mapped[float]
+        + side : Mapped[str]
+        + status : Mapped[str]
+        .. Complex Types ..
+        + meta_data : Mapped[dict]
+    }
+
+    Base <|-- OrderModel : inherits
+}
+
+' --- DATABASE SIDE ---
+package "PostgreSQL Container" #E1F5FE {
+    entity "orders" as Table <<Table>> {
+        * order_id : VARCHAR [PK]
+        --
+        * symbol : VARCHAR [INDEX]
+        * quantity : DOUBLE PRECISION
+        * price : DOUBLE PRECISION
+        * side : VARCHAR(4)
+        * status : VARCHAR
+        * metadata : JSONB
+    }
+}
+
+' --- THE MAPPING ---
+OrderModel ..> Table : "Maps to via SQLAlchemy"
+
+note "<b>Alembic Migrations</b>\nGenerates the SQL 'CREATE TABLE'\ncommand based on OrderModel" as MigrationNote
+OrderModel .. MigrationNote
+MigrationNote ..> Table
+
+note right of OrderModel::meta_data
+  SQLAlchemy automatically handles
+  serialization to JSONB
+end note
+
+note right of Table::symbol
+  Indexed for fast filtering
+  (e.g., WHERE symbol='BTC')
+end note
+
+@enduml
