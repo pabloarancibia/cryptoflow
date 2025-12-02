@@ -179,4 +179,4 @@ logs/
 
 *.tgz
 
-full_project_context.txt
+full_project*
