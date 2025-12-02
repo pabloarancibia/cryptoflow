@@ -1,14 +1,14 @@
 import structlog
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-from src.application.interfaces import AbstractUnitOfWork
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.application.ports.interfaces import AbstractUnitOfWork
 from src.infrastructure.repositories.postgres import SqlAlchemyOrderRepository
-from src.infrastructure.database import AsyncSessionLocal
+from src.infrastructure.database import get_session_factory
 
 logger = structlog.get_logger()
 
 class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
-    def __init__(self, session_factory=AsyncSessionLocal):
-        self.session_factory = session_factory
+    def __init__(self):
+        self.session_factory = get_session_factory()
         self.session: AsyncSession = None
 
     async def __aenter__(self):

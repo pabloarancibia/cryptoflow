@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from src.domain.entities import Order
 from src.infrastructure.models import OrderModel
-from src.application.interfaces import OrderRepository
+from src.application.ports.interfaces import OrderRepository
 
 class SqlAlchemyOrderRepository(OrderRepository):
     def __init__(self, session: AsyncSession):

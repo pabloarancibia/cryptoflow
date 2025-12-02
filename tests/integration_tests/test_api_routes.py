@@ -1,17 +1,22 @@
-from fastapi.testclient import TestClient
+import pytest
+from httpx import AsyncClient, ASGITransport
 from main import app
 from tests.factories import OrderFactory
 
-client = TestClient(app)
+@pytest.fixture
+async def client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
 
-
-def test_create_order_happy_path():
+@pytest.mark.asyncio
+async def test_create_order_happy_path(client):
     """Test a single random order creation."""
     # 1. Generate random valid payload
     payload = OrderFactory.build_api_payload(symbol="BTC")
 
     # 2. Send Request
-    response = client.post("/api/v1/orders", json=payload)
+    response = await client.post("/api/v1/orders", json=payload)
 
     # 3. Verify
     assert response.status_code == 200
@@ -23,10 +28,11 @@ def test_create_order_happy_path():
     assert data["status"] == "PENDING"
     assert "order_id" in data
 
-
-def test_bulk_order_creation():
+@pytest.mark.asyncio
+async def test_bulk_order_creation(client):
     """Stress test with 5 random orders."""
-    for _ in range(5):
-        payload = OrderFactory.build_api_payload()  # Totally random
-        response = client.post("/api/v1/orders", json=payload)
-        assert response.status_code == 200
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        for _ in range(5):
+            payload = OrderFactory.build_api_payload()
+            response = await ac.post("/api/v1/orders", json=payload)
+            assert response.status_code == 200

@@ -1,7 +1,6 @@
-# src/infrastructure/repositories/memory.py
 from typing import Dict, Optional
 from src.domain.entities import Order
-from src.application.interfaces import OrderRepository
+from src.application.ports.interfaces import OrderRepository
 
 class InMemoryOrderRepository(OrderRepository):
     def __init__(self):

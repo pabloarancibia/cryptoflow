@@ -2,7 +2,7 @@ import asyncio
 import random
 from typing import List
 
-from src.application.interfaces import ExchangeClient
+from src.application.ports.interfaces import ExchangeClient
 
 
 class MockExchangeAdapter(ExchangeClient):

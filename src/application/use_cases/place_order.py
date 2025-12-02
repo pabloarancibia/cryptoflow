@@ -1,7 +1,7 @@
 import uuid
 import structlog
 from src.domain.entities import Order
-from src.application.interfaces import AbstractUnitOfWork, ExchangeClient
+from src.application.ports.interfaces import AbstractUnitOfWork, ExchangeClient
 from src.application.dtos import OrderCreate, OrderResponse
 from src.domain.services import SymbolRegistry
 

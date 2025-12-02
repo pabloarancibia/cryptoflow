@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from src.application.interfaces import ExchangeClient
+from src.application.ports.interfaces import ExchangeClient
 from src.application.factories import StrategyFactory
 
 # DTOs for this specific Use Case

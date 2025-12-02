@@ -1,6 +1,6 @@
 import structlog
 
-from src.application.interfaces import AbstractUnitOfWork
+from src.application.ports.interfaces import AbstractUnitOfWork
 from src.infrastructure.repositories.memory import InMemoryOrderRepository
 
 logger = structlog.getLogger()

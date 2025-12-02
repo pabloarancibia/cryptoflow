@@ -1,36 +1,47 @@
 import uuid
 import structlog
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 logger = structlog.get_logger()
 
+class RequestLogMiddleware:
+    def __init__(self, app: ASGIApp):
+        self.app = app
 
-class RequestLogMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next) -> Response:
-        # Generate unique ID for this request
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        # 1. Setup Context (Same as before)
         request_id = str(uuid.uuid4())
-
-        # Bind it to the global context
-        # Any log created after this line will automatically have {"request_id": "..."}
         structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(request_id=request_id)
 
-        # Log the start
+        # 2. Extract Details from Scope (No Request object needed)
+        client = scope.get("client")
+        client_ip = client[0] if client else "unknown"
+        method = scope.get("method")
+        path = scope.get("path")
+
         logger.info(
             "request_started",
-            method=request.method,
-            path=request.url.path,
-            client_ip=request.client.host
+            method=method,
+            path=path,
+            client_ip=client_ip
         )
 
-        # 4. Process Request
-        response = await call_next(request)
+        # 3. Wrapper to intercept the status code
+        # In Pure ASGI, we don't get a "Response" object returned.
+        # We catch the 'http.response.start' message as it flies back out.
+        async def send_wrapper(message):
+            if message["type"] == "http.response.start":
+                status_code = message["status"]
+                logger.info(
+                    "request_finished",
+                    status_code=status_code
+                )
+            await send(message)
 
-        # 5. Log the end
-        logger.info(
-            "request_finished",
-            status_code=response.status_code
-        )
-
-        return response
+        # 4. Process Request (Await the app directly, no background task)
+        await self.app(scope, receive, send_wrapper)
