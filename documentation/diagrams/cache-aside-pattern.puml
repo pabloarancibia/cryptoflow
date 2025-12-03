@@ -1,0 +1,69 @@
+@startuml
+!theme plain
+autonumber
+
+title Cache-Aside Pattern (Proxy Caching)
+
+actor "User / Client" as User
+box "Your Infrastructure" #LightBlue
+    participant "Trading Bot\n(Application)" as App
+    database "Redis\n(Cache)" as Cache
+end box
+
+participant "Binance API\n(Source of Truth)" as Source
+
+== Scenario A: Cache Hit (Fast ~1ms) ==
+
+User -> App: Get Price ("BTC")
+activate App
+
+    App -> Cache: GET price:BTC
+    activate Cache
+    Cache --> App: Return "60000.00"
+    deactivate Cache
+
+    note right of App
+      Data found!
+      Return immediately.
+    end note
+
+App --> User: Return 60000.00
+deactivate App
+
+|||
+
+== Scenario B: Cache Miss (Slow ~200ms) ==
+
+User -> App: Get Price ("SOL")
+activate App
+
+    App -> Cache: GET price:SOL
+    activate Cache
+    Cache --> App: Return nil / null
+    deactivate Cache
+
+    note right of App
+      Data NOT found.
+      Must fetch from Source.
+    end note
+
+    App -> Source: Fetch Price ("SOL")
+    activate Source
+    Source --> App: Return 150.00
+    deactivate Source
+
+    note right of App #Yellow
+      **CRITICAL STEP:**
+      Save to Cache for next time
+      Set TTL (e.g. 5 sec)
+    end note
+
+    App -> Cache: SET price:SOL "150.00" EX=5
+    activate Cache
+    Cache --> App: OK
+    deactivate Cache
+
+App --> User: Return 150.00
+deactivate App
+
+@enduml
