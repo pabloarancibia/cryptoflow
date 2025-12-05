@@ -1,7 +1,6 @@
 import asyncio
 import random
-import json
-from typing import List
+from typing import List, Dict
 from src.infrastructure.cache import RedisClient
 from src.application.ports.interfaces import ExchangeClient
 
@@ -35,6 +34,19 @@ class MockExchangeAdapter(ExchangeClient):
         await self.cache.set(cache_key, str(price), ttl=5)
 
         return price
+
+    async def get_latest_prices(self, symbols: List[str]) -> Dict[str, float]:
+        """
+        Fetches multiple symbols concurrently using asyncio.gather.
+        """
+
+        # Create a list of Coroutine Objects
+        # NOT calling await here. We are creating "Pending Tasks".
+        tasks = [self.get_current_price(symbol) for symbol in symbols]
+
+
+        prices = await asyncio.gather(*tasks)
+        return {symbol: price for symbol, price in zip(symbols, prices)}
 
     async def get_price_history(self, symbol: str, limit: int = 20) -> List[float]:
         """Generates a fake price history trend."""

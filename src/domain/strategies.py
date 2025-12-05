@@ -1,3 +1,6 @@
+import math
+import random
+
 from abc import ABC, abstractmethod
 from typing import List, Literal
 
@@ -90,3 +93,30 @@ class RSIStrategy(TradingStrategy):
             return "SELL"
 
         return "HOLD"
+
+    # --- CPU BOUND TASK ---
+    # This function must be at the top level to be picklable by multiprocessing
+def run_monte_carlo_simulation(base_price: float, iterations: int = 5_000_000) -> dict:
+    """
+    Simulates millions of price paths to calculate Value at Risk (VaR).
+    This is a BLOCKING CPU-bound operation.
+    """
+    results = []
+    # Heavy mathematical loop
+    for _ in range(iterations):
+        # Simulate a random daily return
+        shock = random.gauss(0, 1)  # Standard normal distribution
+        simulated_price = base_price * math.exp(0.01 + 0.2 * shock)
+        results.append(simulated_price)
+
+    # Calculate statistics
+    avg_price = sum(results) / len(results)
+    min_price = min(results)
+    max_price = max(results)
+
+    return {
+        "iterations": iterations,
+        "average_price": round(avg_price, 2),
+        "min_price": round(min_price, 2),
+        "max_price": round(max_price, 2)
+    }

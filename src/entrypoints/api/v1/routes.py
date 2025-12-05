@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from src.application.dtos import OrderCreate, OrderResponse
 from src.application.use_cases.place_order import PlaceOrderUseCase
 from src.application.use_cases.analyze_market import AnalysisRequest, AnalysisResponse, AnalyzeMarketUseCase
+from src.application.use_cases.run_backtest import RunBacktestUseCase
 from src.infrastructure.uow import InMemoryUnitOfWork
 from src.infrastructure.adapters.mock_exchange import MockExchangeAdapter
 from src.infrastructure.uow_postgres import SqlAlchemyUnitOfWork
@@ -29,6 +30,16 @@ def get_analyze_market_use_case(
 ):
     return AnalyzeMarketUseCase(exchange)
 
+def get_backtest_use_case():
+    # We access the pool that we created in main.py via a dirty import
+    # OR (cleaner) typically via request.app.state.
+
+    # we will import main inside the function
+    # to avoid circular import errors at top-level.
+    import main
+    return RunBacktestUseCase(main.process_pool)
+
+
 @router.post("/orders", response_model=OrderResponse)
 async def place_order(
     order_data: OrderCreate,
@@ -48,3 +59,15 @@ async def analyze_market(
     User chooses the strategy at runtime!
     """
     return await use_case.execute(request)
+
+@router.post("/backtest")
+async def run_backtest(
+    price: float = 50000.0,
+    use_case: RunBacktestUseCase = Depends(get_backtest_use_case)
+):
+    """
+    Triggers a CPU-Heavy Simulation.
+    Because we use Multiprocessing, this should NOT block the Health Check.
+    """
+    result = await use_case.execute(price)
+    return result

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import Optional, List, Dict
 from src.domain.entities import Order
 
 # 1. The Repository Port
@@ -49,6 +49,14 @@ class ExchangeClient(ABC):
     @abstractmethod
     async def get_current_price(self, symbol: str) -> float:
         """Fetch real-time price for a symbol."""
+        pass
+
+    @abstractmethod
+    async def get_latest_prices(self, symbols: List[str]) -> Dict[str, float]:
+        """
+        Fetch multiple prices in parallel.
+        Returns: {"BTC": 50000.0, "ETH": 3000.0}
+        """
         pass
 
     @abstractmethod
