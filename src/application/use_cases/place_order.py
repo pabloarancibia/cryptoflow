@@ -4,6 +4,7 @@ from src.domain.entities import Order
 from src.application.ports.interfaces import AbstractUnitOfWork, ExchangeClient
 from src.application.dtos import OrderCreate, OrderResponse
 from src.domain.services import SymbolRegistry
+from src.application.tasks import handle_order_created
 
 logger = structlog.get_logger()
 
@@ -50,10 +51,23 @@ class PlaceOrderUseCase:
             await self.uow.orders.add(new_order)
 
             # request_id auto-added by middleware
-            logger.info("order_created", order_id=new_order.order_id, price=new_order.price)
+            #logger.info("order_created", order_id=new_order.order_id, price=new_order.price)
 
             # Commit happens automatically on __exit__
             # If line 2 failed, Commit would never happen.
 
             # Return DTO
-            return OrderResponse.model_validate(new_order)
+            #return OrderResponse.model_validate(new_order)
+
+        # 3. Event Publishing (Fire and Forget)
+        # We prefer doing this AFTER the transaction is committed.
+        # .delay(): sends the message to RabbitMQ
+        handle_order_created.delay(
+            order_id=new_order.order_id,
+            symbol=new_order.symbol,
+            price=new_order.price
+        )
+
+        logger.info("domain_event_published", event_type="order_created", order_id=new_order.order_id)
+
+        return OrderResponse.model_validate(new_order)
