@@ -1,0 +1,49 @@
+sequenceDiagram
+    autonumber
+    
+    %% --- EXTERNAL WORLD ---
+    actor User as User (Browser/Mobile)
+    Note right of User: Speaks: HTTP/1.1 (JSON)<br/>"I want to buy BTC"
+
+    %% --- THE GATEWAY ---
+    box "Public Interface" #fdfdfd
+        participant Gateway as API Gateway
+    end
+    Note over Gateway: <b>The Translator</b><br/>Receives HTTP<br/>Sends gRPC
+
+    %% --- INTERNAL NETWORK ---
+    box "Private Docker Network" #e6f7ff
+        participant OrderSvc as Order Service
+        participant MarketSvc as Market Data Service
+        participant DB as PostgreSQL
+        participant Queue as RabbitMQ
+        participant Worker as Audit Worker
+    end
+
+    %% --- FLOW ---
+    
+    %% 1. External HTTP
+    User->>Gateway: POST /orders<br/>(HTTP REST)
+
+    %% 2. Internal gRPC
+    Gateway->>OrderSvc: gRPC PlaceOrder()<br/>(Protobuf Binary)
+
+    %% 3. Service to Service
+    activate OrderSvc
+        OrderSvc->>MarketSvc: gRPC GetPrice()<br/>(Internal Request)
+        MarketSvc-->>OrderSvc: Returns Price
+        
+        OrderSvc->>DB: SQL Insert
+        
+        %% 4. Async Event
+        OrderSvc->>Queue: Publish Event<br/>(AMQP Message)
+        
+        OrderSvc-->>Gateway: gRPC Response
+    deactivate OrderSvc
+
+    %% 5. Response
+    Gateway-->>User: HTTP 200 OK
+
+    %% 6. Background Processing
+    Queue->>Worker: Consume Message
+    Note over Worker: <b>Does NOT accept requests.</b><br/>Only listens to Queue.

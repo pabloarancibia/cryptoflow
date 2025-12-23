@@ -1,0 +1,50 @@
+graph TB
+    subgraph External["External World"]
+        Exchange["Mock Exchange"]
+        User["Client/Trader"]
+    end
+
+    subgraph Monolith["CryptoFlow Monolith"]
+        direction TB
+        
+        subgraph Entrypoints["Entrypoints (API)"]
+            API["FastAPI Router"]
+            Handlers["Exception Handlers"]
+        end
+
+        subgraph Application["Application Layer"]
+            AppService["Order Service"]
+            UoW["Unit of Work (UoW)"]
+        end
+
+        subgraph Domain["Domain Layer"]
+            OrderEntity["Order Entity"]
+            Strategy["Trading Strategy (ABC)"]
+        end
+
+        subgraph Infrastructure["Infrastructure Layer"]
+            Repo["Postgres Repository"]
+            Adapter["Exchange Adapter"]
+            Publisher["RabbitMQ Publisher"]
+            Cache["Redis Cache"]
+        end
+    end
+
+    subgraph Persistence["Persistence & Messaging"]
+        DB[("PostgreSQL")]
+        Queue("RabbitMQ")
+        RedisDB[("Redis")]
+    end
+
+    %% Relationships
+    User -->|"HTTP/REST"| API
+    API -->|"DTOs"| AppService
+    AppService -->|"Manage Transaction"| UoW
+    AppService -->|"Publish Events"| Publisher
+    UoW -->|"Persist"| Repo
+    Repo -->|"AsyncPG"| DB
+    Adapter -->|"Fetch Price"| Exchange
+    AppService -->|"Get Market Data"| Adapter
+    Adapter -->|"Read/Write"| Cache
+    Cache --> RedisDB 
+    Publisher -->|"order.created"| Queue

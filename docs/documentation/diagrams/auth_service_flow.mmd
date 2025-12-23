@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant API as Main API (Gateway)
+    participant Auth as Auth Service
+    participant DB as Auth DB
+
+    User->>API: POST /login {user, pass}
+    activate API
+
+    API->>Auth: Request: ValidateCredentials(user, pass)
+    activate Auth
+    Note right of API: Internal gRPC Call
+
+    Auth->>DB: Query User Hash
+    activate DB
+    DB-->>Auth: Return Hash
+    deactivate DB
+
+    Auth->>Auth: Verify Password (Argon2)
+    Auth->>Auth: Generate JWT Token
+
+    Auth-->>API: Response: {token, expires_in}
+    deactivate Auth
+
+    API-->>User: 200 OK {token}
+    deactivate API
+
+    Note right of User: User now sends Token<br/>with future requests

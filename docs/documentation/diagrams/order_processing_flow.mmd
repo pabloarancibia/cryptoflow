@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    actor User as Trader/Client
+    participant Gateway as API Gateway
+    participant OrderSvc as Order Service
+    participant DB as Postgres DB
+    participant Queue as RabbitMQ
+
+    User->>Gateway: POST /orders {symbol, side, qty}
+    activate Gateway
+
+    Gateway->>OrderSvc: gRPC: CreateOrder(OrderDTO)
+    activate OrderSvc
+
+    OrderSvc->>OrderSvc: Validate Params
+
+    OrderSvc->>DB: INSERT Order (Components, State=PENDING)
+    activate DB
+    DB-->>OrderSvc: Order ID
+    deactivate DB
+
+    OrderSvc->>Queue: Publish "order.created"
+    activate Queue
+    Queue-->>OrderSvc: Ack
+    deactivate Queue
+
+    OrderSvc-->>Gateway: OrderResponse {id, status}
+    deactivate OrderSvc
+
+    Gateway-->>User: 201 Created
+    deactivate Gateway

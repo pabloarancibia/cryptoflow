@@ -1,0 +1,42 @@
+graph TB
+    subgraph Monolith["Monolithic Approach"]
+        direction TB
+        M_Gateway["API Gateway"]
+        M_Auth["Auth Logic"]
+        M_Order["Order Logic"]
+        M_Market["Market Data"]
+        M_DB[("Single DB")]
+        
+        M_Gateway --> M_Auth
+        M_Gateway --> M_Order
+        M_Gateway --> M_Market
+        M_Auth --> M_DB
+        M_Order --> M_DB
+        M_Market --> M_DB
+    end
+
+    subgraph Microservices["Microservices Approach"]
+        direction TB
+        S_Gateway["API Gateway"]
+        
+        subgraph S_Auth_Node["Auth Service"]
+            S_Auth["Auth API"]
+            S_AuthDB[("Auth DB")]
+        end
+        
+        subgraph S_Order_Node["Order Service"]
+            S_Order["Order API"]
+            S_OrderDB[("Order DB")]
+        end
+        
+        subgraph S_Market_Node["Market Data Service"]
+            S_Market["Market Data API"]
+        end
+        
+        S_Gateway -->|"gRPC/HTTP"| S_Auth
+        S_Gateway -->|"gRPC"| S_Order
+        S_Gateway -->|"gRPC/Stream"| S_Market
+        
+        S_Auth --> S_AuthDB
+        S_Order --> S_OrderDB
+    end

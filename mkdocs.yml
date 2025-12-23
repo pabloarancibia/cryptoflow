@@ -1,0 +1,35 @@
+site_name: CryptoFlow Documentation
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: cyan
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Documentation System: documentation/documentation_system.md
+  - Architecture:
+    - Microservices Theory: documentation/microservices_theory.md
+    - Service Implementation: documentation/microservices_implementation.md
+    - Implementation Guide: documentation/grpc_implementation_guide.md
+    - Diagram Preview: documentation/diagram_preview.md
+  
+  - Wiki:
+    - Architecture Evolution (Weeks 1-4): wiki/architecture_evolution.md
+    
+  - Project Info:
+    - README: README.md

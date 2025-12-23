@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    actor Strategy as Strategy Engine
+    participant Client as Market Data Client
+    participant Server as Market Data Service
+    participant Adapter as Exchange Adapter
+    participant Redis as Price Cache (Redis)
+
+    Strategy->>Client: Subscribe(symbol="BTC/USD")
+    activate Client
+
+    Client->>Server: gRPC: StreamPrices(Request)
+    activate Server
+
+    loop Every tick
+        Server->>Adapter: Fetch Latest Price
+        activate Adapter
+        Adapter->>Redis: Get/Set Price
+        Adapter-->>Server: Price Update
+        deactivate Adapter
+        
+        Server-->>Client: yield PriceUpdate(price, timestamp)
+        Client-->>Strategy: Callback: on_tick(price)
+    end

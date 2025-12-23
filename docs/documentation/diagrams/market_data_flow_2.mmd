@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor Client
+    participant Stub as RPC Stub
+    participant Service as MarketDataService
+
+    Client->>Stub: StreamMarketData(symbol="BTC/USD")
+    activate Stub
+
+    Stub->>Service: HTTP/2 HEADERS (Open Stream)
+    activate Service
+
+    loop Infinite / Connection Open
+        Service->>Service: Generate Random Price
+        Service-->>Stub: yield MarketDataResponse(price=...)
+        Stub-->>Client: Print Price Update
+        Note right of Service: The function is paused here<br/>until next iteration
+    end
+
+    Client->>Stub: Cancel / Close Connection
+    Stub->>Service: HTTP/2 RST_STREAM
+    deactivate Service
+    deactivate Stub
