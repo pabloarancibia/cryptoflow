@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package order;
+
+service OrderService {
+  rpc PlaceOrder (OrderRequest) returns (OrderResponse) {}
+}
+
+message OrderRequest {
+  string symbol = 1;
+  double quantity = 2;
+  double price = 3;
+  string side = 4; // "BUY" or "SELL"
+}
+
+message OrderResponse {
+  string order_id = 1;
+  string status = 2;
+  string message = 3;
+}

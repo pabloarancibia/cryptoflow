@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package market_data;
+
+service MarketDataService {
+  rpc StreamMarketData (MarketDataRequest) returns (stream MarketDataResponse) {}
+}
+
+message MarketDataRequest {
+  string symbol = 1;
+}
+
+message MarketDataResponse {
+  string symbol = 1;
+  double price = 2;
+  double volume = 3;
+  int64 timestamp = 4;
+}
