@@ -22,7 +22,7 @@ In **Microservices**, the application is broken down into small, independent ser
 ### Visual Comparison
 
 ```mermaid
---8<-- "docs/documentation/diagrams/monolith_vs_microservices.mmd"
+--8<-- "docs/documentation/diagrams/architecture/monolith_vs_microservices.mmd"
 ```
 
 ---
@@ -89,5 +89,5 @@ Authentication is a high-traffic, low-compute operation. Every single request hi
 When a user logs in, the Main API (Gateway) talks to the Auth Service.
 
 ```mermaid
---8<-- "docs/documentation/diagrams/auth_service_flow.mmd"
+--8<-- "docs/documentation/diagrams/flows/auth_service_flow.mmd"
 ```

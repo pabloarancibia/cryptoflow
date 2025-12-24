@@ -17,7 +17,7 @@ This guide details the technical implementation of our two core services: **Mark
 The client opens a connection and requests a specific symbol. The server keeps the channel open and yields chunks of price data as they become available.
 
 ```mermaid
---8<-- "docs/documentation/diagrams/market_data_flow.mmd"
+--8<-- "docs/documentation/diagrams/flows/market_data_flow.mmd"
 ```
 
 ### Key Python Components
@@ -40,7 +40,7 @@ The client opens a connection and requests a specific symbol. The server keeps t
 Unlike market data, this is a transactional operation. ACIDs properties must be guaranteed.
 
 ```mermaid
---8<-- "docs/documentation/diagrams/order_processing_flow.mmd"
+--8<-- "docs/documentation/diagrams/flows/order_processing_flow.mmd"
 ```
 
 ### Key Python Components
