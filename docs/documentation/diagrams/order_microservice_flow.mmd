@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor Gateway as API Gateway<br>(FastAPI)
+    participant OrderSvc as Order Service<br>(gRPC Server)
+    participant MarketSvc as Market Data Service<br>(gRPC Client)
+    participant DB as Database<br>(PostgreSQL)
+    participant Queue as RabbitMQ<br>(Events)
+
+    Gateway->>OrderSvc: PlaceOrder(symbol="BTC", qty=1.0, limit=50000)
+    activate OrderSvc
+
+    OrderSvc->>OrderSvc: Validate Inputs (qty > 0)
+
+    rect rgb(240, 248, 255)
+        note right of OrderSvc: 1. Inter-Service Communication
+        OrderSvc->>MarketSvc: GetCurrentPrice("BTC")
+        activate MarketSvc
+        MarketSvc-->>OrderSvc: Price(50050.00)
+        deactivate MarketSvc
+    end
+
+    OrderSvc->>OrderSvc: Business Rule Check<br>(Limit Price vs Market Price)
+
+    rect rgb(255, 248, 240)
+        note right of OrderSvc: 2. ACID Transaction (UnitOfWork)
+        OrderSvc->>DB: BEGIN TRANSACTION
+        OrderSvc->>DB: INSERT INTO orders (...)
+        OrderSvc->>DB: COMMIT
+    end
+
+    rect rgb(240, 255, 240)
+        note right of OrderSvc: 3. Event Publishing
+        OrderSvc->>Queue: Publish "order.created"
+    end
+
+    OrderSvc-->>Gateway: OrderResponse(id="uuid", status="ACCEPTED")
+    deactivate OrderSvc

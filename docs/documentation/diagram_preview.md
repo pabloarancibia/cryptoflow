@@ -11,3 +11,20 @@
 ```mermaid
 --8<-- "docs/documentation/diagrams/communication_flow.mmd"
 ```
+
+## gRPC Order Market DataCommunication Flow
+
+```mermaid
+--8<-- "docs/documentation/diagrams/order_microservice_flow.mmd"
+```
+
+## gRPC and Microservices Architecture
+
+```mermaid
+--8<-- "docs/documentation/diagrams/arch_grpc_microsrv.mmd"
+```
+## Services Architecture
+
+```mermaid
+--8<-- "docs/documentation/diagrams/arch_diagram_services.mmd"
+```

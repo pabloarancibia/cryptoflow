@@ -1,0 +1,42 @@
+---
+config:
+  layout: fixed
+---
+flowchart TB
+ subgraph subGraph0["Public Zone (Entrypoint)"]
+        Gateway["API Gateway<br>FastAPI :8000"]
+        GrpcClient["gRPC Client Manager"]
+  end
+ subgraph subGraph1["Private Zone (Docker Network)"]
+        OrderSvc["Order Service<br>gRPC :50052"]
+        MarketSvc["Market Data Service<br>gRPC :50051"]
+  end
+ subgraph Infrastructure["Infrastructure"]
+        Postgres[("PostgreSQL")]
+        RabbitMQ{"RabbitMQ<br>Exchange: order_events"}
+        CeleryWorker["Celery Worker"]
+        Redis[("Redis Cache")]
+  end
+    User(["User / Trader"]) -- HTTP POST /orders --> Gateway
+    Gateway -- Calls initialize() --> GrpcClient
+    GrpcClient -- gRPC (Protobuf) --> OrderSvc
+    OrderSvc -- "1. GetCurrentPrice()" --> MarketSvc
+    MarketSvc -.-> OrderSvc
+    OrderSvc -- "2. ACID Tx" --> Postgres
+    OrderSvc -- "3. Publish Event" --> RabbitMQ
+    RabbitMQ -.-> CeleryWorker
+    MarketSvc -- Reads/Caches --> Redis
+
+     Gateway:::gateway
+     OrderSvc:::service
+     MarketSvc:::service
+     Postgres:::db
+     RabbitMQ:::bus
+     CeleryWorker:::service
+     Redis:::db
+     User:::external
+    classDef external fill:#f9f,stroke:#333,stroke-width:2px
+    classDef gateway fill:#ff9,stroke:#333,stroke-width:2px
+    classDef service fill:#9cf,stroke:#333,stroke-width:2px
+    classDef db fill:#eee,stroke:#333,stroke-width:2px
+    classDef bus fill:#f96,stroke:#333,stroke-width:2px
