@@ -1,19 +1,53 @@
+import asyncio
 import re
 from src.infrastructure.adapters.mock_exchange import MockExchangeAdapter
+from src.infrastructure.uow_postgres import SqlAlchemyUnitOfWork
+from src.application.use_cases.place_order import PlaceOrderUseCase
+from src.application.dtos import OrderCreate
 
-# Tool Definition
+# --- REAL IMPLEMENTATION ---
 def execute_trade(symbol: str, side: str, quantity: float, price: float = None):
     """
-    Executes a trade on the exchange.
+    Executes a REAL trade by calling the Application Layer.
+    Persists data to PostgreSQL.
     """
     print(f"\n[TOOL CALLED] execute_trade(symbol='{symbol}', side='{side}', quantity={quantity}, price={price})")
     
-    # Simulate execution
-    adapter = MockExchangeAdapter()
-    # In a real scenario, we might await this. For demo, we just print.
-    print(f"  -> Connecting to Exchange...")
-    print(f"  -> Order Placed Successfully!")
-    return {"status": "success", "order_id": "simulated_id_123"}
+    async def run_backend_logic():
+        # 1. Setup Dependencies (Manually, since no FastAPI Dependency Injection here)
+        uow = SqlAlchemyUnitOfWork()
+        exchange = MockExchangeAdapter()
+        use_case = PlaceOrderUseCase(uow, exchange)
+        
+        # 2. Get Current Market Price (Required for the Order)
+        # Note: We ignore the passed 'price' arg for simplicity and treat as Market Order
+        # or use it if provided (but logic below uses current_price)
+        current_price = await exchange.get_current_price(symbol)
+        
+        # 3. Create the Data Transfer Object (DTO)
+        order_dto = OrderCreate(
+            symbol=symbol,
+            quantity=quantity,
+            side=side,
+            price=current_price # Market Order behavior
+        )
+        
+        # 4. Execute the Use Case (Write to DB)
+        response = await use_case.execute(order_dto)
+        return response
+
+    try:
+        # Bridge Sync -> Async
+        result = asyncio.run(run_backend_logic())
+        
+        print(f"  -> ✅ DB COMMIT SUCCESS")
+        print(f"  -> Real Order ID: {result.order_id}")
+        
+        return {"status": "success", "order_id": result.order_id, "price": result.price}
+        
+    except Exception as e:
+        print(f"  -> ❌ ERROR: {e}")
+        return {"status": "error", "message": str(e)}
 
 
 class SimulatedAgent:

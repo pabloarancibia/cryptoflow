@@ -13,12 +13,12 @@ def main():
     kb.ingest_docs()
     
     # Query about architecture
-    kb.query("How does the Repository Pattern work?")
+    kb.query("How does the gRPC work?")
 
     print("\n\n=== 2. Intelligent Agent Demo ===")
     agent = SimulatedAgent()
     
-    prompt = "Please place a SELL order for 10 ETH"
+    prompt = "Please place a SELL order for 1 BTC"
     response = agent.run(prompt)
     
     print("\n[Final Agent Response]:", response)
