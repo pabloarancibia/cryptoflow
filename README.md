@@ -39,7 +39,8 @@ cryptoflow/
 │   ├── domain/          # Enterprise business logic (Entities, Value Objects)
 │   ├── use_cases/       # Application business logic
 │   ├── interfaces/      # Adapters (API Routes, CLI)
-│   └── infrastructure/  # DB, External APIs, Redis implementation
+│   ├── infrastructure/  # DB, External APIs, Redis implementation
+│   └── ai/              # AI Agent & Knowledge Base (RAG)
 ├── tests/               # Unit and Integration tests
 ├── data/                # Local data storage (ignored by git)
 ├── docker-compose.yml
@@ -140,6 +141,14 @@ Week 6: System Design & Kubernetes
 [ ] Configure Load Balancing and Horizontal Scaling.
 
 [ ] Execute Blue/Green deployment strategy.
+
+Week 7: AI & Agentic Workflows
+
+[x] Implement RAG (Retrieval-Augmented Generation) for project docs.
+
+[x] Create Deterministic Trader Agent (Tool Use Pattern).
+
+[x] Bridge Sync Agent to Async Trading Engine.
 
 🤝 Contributing
 

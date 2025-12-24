@@ -1,6 +1,6 @@
-# Project History: Weeks 1-4 (Architecture Evolution)
+# Project History: Weeks 1-7 (Architecture Evolution)
 
-This document serves as a retroactive summary of the architectural decisions, core concepts, and system evolution of **CryptoFlow** during the first 4 weeks of development.
+This document serves as a retroactive summary of the architectural decisions, core concepts, and system evolution of **CryptoFlow** from inception to Week 7.
 
 ---
 
@@ -34,7 +34,7 @@ By Week 3, we transitioned from an in-memory prototype to a robust **Layered Arc
 ### Component Diagram (Current State)
 
 ```mermaid
---8<-- "docs/documentation/diagrams/architecture_component.mmd"
+--8<-- "docs/documentation/diagrams/architecture/architecture_component.mmd"
 ```
 
 ### Layer Definitions
@@ -70,8 +70,38 @@ By Week 3, we transitioned from an in-memory prototype to a robust **Layered Arc
 
 ---
 
-## 4. Future Roadmap (Week 5+)
-*   **Microservices**: Splitting Authentication into a dedicated service.
-*   **Event Consumers**: Implementing the `Worker` processes to consume RabbitMQ messages.
-*   **Testing**: End-to-End integration tests.
+## 4. Week 5: Containerization (DevOps)
+*   **Goal**: Create a reproducible environment.
+*   **Action**: Fully Dockerized the application using `docker-compose`.
+*   **Services**:
+    *   `web`: FastAPI Application.
+    *   `db`: PostgreSQL.
+    *   `redis`: Caching & Locking.
+    *   `rabbitmq`: Event Broker.
+*   **Outcome**: "It works on my machine" is solved. One command (`docker-compose up`) starts the entire stack.
 
+---
+
+## 5. Week 6: Microservices & gRPC (Scaling)
+*   **Transition**: Moved from Monolith to Microservices for critical components.
+*   **Change**: Extracted `OrderService` and `MarketDataService` into standalone gRPC processes.
+*   **Protocol**: Replaced internal function calls with efficient **gRPC (Protobuf)** calls.
+*   **Why**:
+    *   **Latency**: gRPC is much faster than REST for internal comms.
+    *   **Independence**: `MarketDataService` can now crash without taking down the Order Entry system.
+
+---
+
+## 6. Week 7: AI & Agentic Workflows (Innovation)
+*   **Goal**: Enable natural language interaction with the trading engine.
+*   **Implementation**:
+    *   **RAG (Retrieval-Augmented Generation)**: Ingested `docs/` folder into a specialized Knowledge Base for asking "How does X work?" questions.
+    *   **Agentic Tool Use**: Implemented a "Trader Agent" that parses natural language ("Buy 10 ETH") and executes trades by calling the `PlaceOrderUseCase`.
+*   **Bridge**: Created a sync-to-async bridge to allow the synchronous Agent loop to drive the fully asynchronous Application Layer.
+
+---
+
+## 7. Future Roadmap
+*   **K8s**: Full Kubernetes deployment.
+*   **LLM Upgrade**: Replace Heuristic Agent with GPT-4o.
+*   **Monitoring**: Prometheus & Grafana dashboards.
