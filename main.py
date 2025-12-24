@@ -17,6 +17,7 @@ configure_logging()
 StrategyFactory.register("SMA", MovingAverageStrategy)
 StrategyFactory.register("RSI", RSIStrategy)
 
+
 # --- GLOBAL STATE ---
 # We store the pool here so routes can access it
 process_pool: ProcessPoolExecutor = None
@@ -30,11 +31,18 @@ async def lifespan(app: FastAPI):
     print("--- STARTING PROCESS POOL ---")
     process_pool = ProcessPoolExecutor()
 
+    # STARTUP: Initialize gRPC Client Manager
+    from src.infrastructure.grpc_client import grpc_client_manager
+    await grpc_client_manager.initialize()
+
     yield
 
     # SHUTDOWN: Clean up resources
     print("--- SHUTTING DOWN PROCESS POOL ---")
     process_pool.shutdown()
+
+    # SHUTDOWN: Close gRPC connections
+    await grpc_client_manager.close()
 
 app = FastAPI(
     title="CryptoFlow HFT Engine",
