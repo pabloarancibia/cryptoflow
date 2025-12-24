@@ -1,0 +1,168 @@
+
+================================================================================
+AI IMPLEMENTATION DUMP
+================================================================================
+This file contains the code for the "AI & Vectors Sprint" (Simulated).
+
+STRUCTURE:
+src/ai/
+  knowledge_base.py
+  trader_agent.py
+scripts/
+  run_ai_demo.py
+
+DEPENDENCIES ADDED:
+rank-bm25==0.2.2
+
+================================================================================
+FILE: src/ai/knowledge_base.py
+================================================================================
+import os
+import glob
+from rank_bm25 import BM25Okapi
+
+class ProjectDocumentationDB:
+    def __init__(self, docs_path="docs/"):
+        self.docs_path = docs_path
+        self.chunks = []
+        self.bm25 = None
+        self.is_ingested = False
+
+    def ingest_docs(self):
+        """Reads markdown files, splits by paragraph, and builds BM25 index."""
+        print(f"Ingesting documentation from {self.docs_path}...")
+        
+        md_files = glob.glob(os.path.join(self.docs_path, "**/*.md"), recursive=True)
+        all_chunks = []
+
+        for file_path in md_files:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                # Simple splitting by double newline to approximate paragraphs
+                # Also adding filename for context
+                file_chunks = content.split("\n\n")
+                for chunk in file_chunks:
+                    if len(chunk.strip()) > 50:  # Filter out tiny chunks/headers
+                        all_chunks.append(f"Source: {file_path}\nContent:\n{chunk.strip()}")
+
+        self.chunks = all_chunks
+        
+        # Tokenize for BM25
+        tokenized_corpus = [doc.split(" ") for doc in self.chunks]
+        self.bm25 = BM25Okapi(tokenized_corpus)
+        self.is_ingested = True
+        print(f"Ingested {len(self.chunks)} chunks.")
+
+    def query(self, question: str, n_results=3):
+        """Finds top N relevant chunks for the question."""
+        if not self.is_ingested:
+            print("Database not ingested. Call ingest_docs() first.")
+            return
+
+        print(f"\nQuerying: '{question}'")
+        tokenized_query = question.split(" ")
+        
+        # Get top N results
+        results = self.bm25.get_top_n(tokenized_query, self.chunks, n=n_results)
+        
+        for i, res in enumerate(results):
+            print(f"\n--- Result {i+1} ---")
+            print(res)
+            print("-------------------")
+
+
+================================================================================
+FILE: src/ai/trader_agent.py
+================================================================================
+import re
+from src.infrastructure.adapters.mock_exchange import MockExchangeAdapter
+
+# Tool Definition
+def execute_trade(symbol: str, side: str, quantity: float, price: float = None):
+    """
+    Executes a trade on the exchange.
+    """
+    print(f"\n[TOOL CALLED] execute_trade(symbol='{symbol}', side='{side}', quantity={quantity}, price={price})")
+    
+    # Simulate execution
+    adapter = MockExchangeAdapter()
+    # In a real scenario, we might await this. For demo, we just print.
+    print(f"  -> Connecting to Exchange...")
+    print(f"  -> Order Placed Successfully!")
+    return {"status": "success", "order_id": "simulated_id_123"}
+
+
+class SimulatedAgent:
+    def __init__(self):
+        self.system_prompt = "You are an intelligent trading assistant. You can execute trades based on user commands."
+
+    def run(self, prompt: str):
+        print(f"\n[AGENT] Received prompt: '{prompt}'")
+        print("[AGENT] Thinking...")
+        
+        # Simulated parsing logic (Parsing natural language via Regex)
+        # Supports patterns like: "Buy/Sell 10 ETH", "Place a SELL order for 5 BTC"
+        
+        # Normalize
+        p = prompt.lower()
+        
+        side = None
+        if "buy" in p: side = "BUY"
+        elif "sell" in p: side = "SELL"
+        
+        quantity = None
+        # Extract number
+        match_qty = re.search(r'(\d+(\.\d+)?)', p)
+        if match_qty:
+            quantity = float(match_qty.group(1))
+            
+        symbol = None
+        # Simple heuristic for symbol (3-4 uppercase letters)
+        # scan original prompt for uppercase words
+        words = prompt.split()
+        for w in words:
+            clean_w = w.strip(".,")
+            if clean_w.isupper() and 3 <= len(clean_w) <= 5 and clean_w not in ["BUY", "SELL"]:
+                symbol = clean_w
+                break
+        
+        if side and quantity and symbol:
+            print(f"[AGENT] Intent detected: {side} {quantity} {symbol}")
+            print(f"[AGENT] Invoking tool 'execute_trade'...")
+            result = execute_trade(symbol, side, quantity)
+            print(f"[AGENT] Tool Output: {result}")
+            return f"I have executed your order to {side} {quantity} {symbol}. Order ID: {result['order_id']}"
+        else:
+            return "I understood the command but couldn't extract all parameters (Side, Quantity, Symbol). Please clarify."
+
+
+================================================================================
+FILE: scripts/run_ai_demo.py
+================================================================================
+import sys
+import os
+
+# Ensure src is in path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from src.ai.knowledge_base import ProjectDocumentationDB
+from src.ai.trader_agent import SimulatedAgent
+
+def main():
+    print("=== 1. Vector Database / RAG Demo ===")
+    kb = ProjectDocumentationDB(docs_path="docs/")
+    kb.ingest_docs()
+    
+    # Query about architecture
+    kb.query("How does the Repository Pattern work?")
+
+    print("\n\n=== 2. Intelligent Agent Demo ===")
+    agent = SimulatedAgent()
+    
+    prompt = "Please place a SELL order for 10 ETH"
+    response = agent.run(prompt)
+    
+    print("\n[Final Agent Response]:", response)
+
+if __name__ == "__main__":
+    main()
