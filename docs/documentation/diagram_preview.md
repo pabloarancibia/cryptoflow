@@ -23,8 +23,22 @@
 ```mermaid
 --8<-- "docs/documentation/diagrams/arch_grpc_microsrv.mmd"
 ```
-## Services Architecture
-
+## Services## Architecture Diagram (Mermaid) - Services
 ```mermaid
 --8<-- "docs/documentation/diagrams/arch_diagram_services.mmd"
+```
+
+## AI System Context
+```mermaid
+--8<-- "docs/documentation/diagrams/ai_system_context.mmd"
+```
+
+## AI RAG Flow
+```mermaid
+--8<-- "docs/documentation/diagrams/ai_rag_flow.mmd"
+```
+
+## AI Agent Logic
+```mermaid
+--8<-- "docs/documentation/diagrams/ai_agent_logic.mmd"
 ```

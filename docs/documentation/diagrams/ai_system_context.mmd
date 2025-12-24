@@ -1,0 +1,26 @@
+graph TD
+    subgraph "External World"
+        User[Human Trader]
+        Docs[Project Documentation .md]
+    end
+
+    subgraph "AI Layer (src/ai)"
+        Agent[Trader Agent]
+        KB[Knowledge Base / RAG]
+        Tools[Tool Definitions]
+    end
+
+    subgraph "Core System (src/)"
+        UseCase[PlaceOrderUseCase]
+        Adapter[ExchangeAdapter]
+        DB[(PostgreSQL)]
+    end
+
+    User -->|Prompts| Agent
+    User -->|Queries| KB
+    Docs -->|Ingest| KB
+    
+    Agent -->|Calls| Tools
+    Tools -->|Executes| UseCase
+    KB -->|Context| Agent
+    UseCase -->|Persist| DB

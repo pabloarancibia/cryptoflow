@@ -21,6 +21,7 @@ cryptoflow/
 │   └── documentation/    # Deep-dive guides
 │       ├── microservices_theory.md
 │       ├── grpc_implementation_guide.md
+│       ├── ai_module.md
 │       └── documentation_system.md
 ```
 

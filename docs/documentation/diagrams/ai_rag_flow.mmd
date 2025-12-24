@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant User
+    participant Ingestor
+    participant Index as BM25 Index
+    participant FS as File System
+
+    note over Ingestor: Initialization
+    Ingestor->>FS: Scan *.md files
+    FS-->>Ingestor: Return file paths
+    loop For each file
+        Ingestor->>Ingestor: Read & Chunk Text (Paragraphs)
+    end
+    Ingestor->>Index: Build Token Index
+    
+    note over User: Query Time
+    User->>Index: "How does the Repository work?"
+    Index-->>Index: Calculate Relevance Scores
+    Index-->>User: Return Top 3 Chunks

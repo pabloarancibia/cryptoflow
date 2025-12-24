@@ -26,6 +26,7 @@ nav:
     - Microservices Theory: documentation/microservices_theory.md
     - Service Implementation: documentation/microservices_implementation.md
     - Implementation Guide: documentation/grpc_implementation_guide.md
+    - AI Module: documentation/ai_module.md
     - Diagram Preview: documentation/diagram_preview.md
   
   - Wiki:
