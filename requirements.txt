@@ -56,3 +56,5 @@ grpcio-tools==1.60.0
 mkdocs-material==9.5.34
 plantuml-markdown==3.11.1
 pymdown-extensions==10.10.1
+# Lightweight AI Simulation
+rank-bm25==0.2.2

@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # print(full_context)
     
     # Option B: Save to 'context_dump.txt' to open and copy (RECOMMENDED)
-    output_filename = "context_dump.txt"
+    output_filename = "full_project.txt"
     with open(output_filename, "w", encoding="utf-8") as f:
         f.write(full_context)
     
