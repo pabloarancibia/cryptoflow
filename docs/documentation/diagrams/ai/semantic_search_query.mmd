@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant User
+    participant KB as KnowledgeBase
+    participant Model as SentenceTransformer
+    participant Chroma as ChromaDB
+
+    User->>KB: query("How do I...")
+    KB->>Model: encode(question)
+    Model-->>KB: query_embedding
+    KB->>Chroma: query(query_embedding, n_results)
+    Chroma-->>KB: Top N documents & metadata
+    KB-->>User: Formatted Results

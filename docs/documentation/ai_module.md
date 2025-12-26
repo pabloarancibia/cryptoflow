@@ -20,7 +20,9 @@ This implementation introduces two core capabilities:
 The AI module sits as an **Interface Layer** on top of the existing Clean Architecture. It does not replace the Domain or Application layers; rather, it acts as a new client (alongside the REST API and gRPC services) that consumes them.
 
 ### System Context Diagram
+```mermaid
 --8<-- "docs/documentation/diagrams/ai/ai_system_context.mmd"
+```
 
 ---
 
@@ -40,7 +42,9 @@ When a query is received (e.g., "How does the Repository Pattern work?"):
 3.  The top N (default 3) chunks are returned to the user or Agent context.
 
 ### RAG Flow Diagram
+```mermaid
 --8<-- "docs/documentation/diagrams/ai/ai_rag_flow.mmd"
+```
 
 ---
 
@@ -66,7 +70,9 @@ The Agent is isolated from the backend. It interacts only through defined Tools.
 4.  Returns a JSON-serializable output (Order ID or Error Message).
 
 ### Agent Execution Logic
+```mermaid
 --8<-- "docs/documentation/diagrams/ai/ai_agent_logic.mmd"
+```
 
 ---
 

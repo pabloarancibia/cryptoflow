@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant Docs as Markdown Files
+    participant KB as KnowledgeBase
+    participant Model as SentenceTransformer
+    participant Chroma as ChromaDB
+
+    KB->>Docs: glob("**/*.md")
+    Docs-->>KB: List of files
+    loop For each file
+        KB->>Docs: Read content
+        Docs-->>KB: File content
+        KB->>KB: Split into chunks
+    end
+    KB->>Model: encode(documents)
+    Model-->>KB: embeddings
+    KB->>Chroma: upsert(documents, embeddings, metadata)
+    Chroma-->>KB: Success/Fail
