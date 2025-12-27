@@ -64,3 +64,7 @@ pysqlite3-binary
 faker
 factory-boy
 pytest-mock
+python-dotenv
+openai==2.14.0
+google-generativeai
+

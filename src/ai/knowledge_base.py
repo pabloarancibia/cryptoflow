@@ -1,5 +1,10 @@
 import os
 import glob
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if present
+load_dotenv()
+
 # Patch sqlite3 for ChromaDB compatibility
 try:
     __import__('pysqlite3')
@@ -11,11 +16,18 @@ except ImportError:
 import chromadb
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer
+from src.ai.llm_service import LLMFactory
 
 class ProjectDocumentationDB:
     def __init__(self, docs_path="docs/"):
         self.docs_path = docs_path
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        
+        # Initialize LLM Provider (Strategy Pattern)
+        self.llm_provider = LLMFactory.create_provider()
+        if not self.llm_provider:
+            print("Warning: No LLM Provider available. HyDE will be disabled.")
         
         # Connect to ChromaDB
         # When running locally (outside Docker), we should try localhost:8001 directly.
@@ -73,12 +85,35 @@ class ProjectDocumentationDB:
         else:
             print("No documents found to ingest.")
 
-    def query(self, question: str, n_results=3):
-        """Finds top N relevant chunks for the question using semantic search."""
+    def _generate_hyde_doc(self, query: str) -> str:
+        """Generates a hypothetical document using the active LLM Provider."""
+        if not self.llm_provider:
+            return query
+
+        try:
+            print(f"Generating HyDE document for: '{query}'...")
+            system_instruction = "You are an expert technical writer for the CryptoFlow trading engine. Write a short, hypothetical technical paragraph from the documentation that answers the user's question. Focus on technical terminology and system architecture."
+            
+            hyde_doc = self.llm_provider.generate_text(
+                prompt=query,
+                system_instruction=system_instruction
+            )
+            return hyde_doc
+        except Exception as e:
+            print(f"HyDE generation failed: {e}. Falling back to original query.")
+            return query
+
+    def query(self, question: str, n_results=5):
+        """Finds top N relevant chunks for the question using semantic search (HyDE)."""
         print(f"\nQuerying: '{question}'")
         
-        # Embed the query
-        query_embeddings = self.model.encode([question]).tolist()
+        # 1. Generate Hypothetical Document (HyDE)
+        search_text = self._generate_hyde_doc(question)
+        if search_text != question:
+            print(f"HyDE Document Preview: {search_text[:100]}...")
+        
+        # 2. Embed the search text (HyDE doc or original query)
+        query_embeddings = self.model.encode([search_text]).tolist()
         
         # Query ChromaDB
         results = self.collection.query(
