@@ -1,6 +1,6 @@
 from src.ai.domain.ports import ILLMProvider, ITradingTool
-from src.ai.domain.models import AgentResponse
-import json
+from src.ai.domain.models import AgentResponse, ToolCall
+from src.ai.application.tools.definitions import execute_trade_def
 
 class TraderAgent:
     def __init__(self, llm_provider: ILLMProvider, trading_tool: ITradingTool):
@@ -10,33 +10,21 @@ class TraderAgent:
     def run(self, user_input: str) -> AgentResponse:
         print(f"Agent: Processing '{user_input}'...")
         
-        # 1. Intent Classification / Tool Selection via LLM
-        prompt = f"""You are a trading agent. Analyze the user request.
-Available tools:
-- execute_trade(symbol, side, quantity)
-
-User Request: {user_input}
-
-If the user wants to trade, output a JSON object with keys: "tool", "symbol", "side", "quantity".
-Example: {{"tool": "execute_trade", "symbol": "BTC", "side": "buy", "quantity": 0.5}}
-
-If no trade is requested, output a JSON object with key "message".
-Example: {{"message": "I can only help with trading."}}
-
-Output ONLY JSON.
-"""
-        response_text = self.llm_provider.generate_text(prompt)
+        system_instruction = "You are a trading agent. You can execute trades using the available tools. If the user request is not about trading, simply reply."
         
-        # Clean up response (sometimes LLMs add markdown code blocks)
-        clean_text = response_text.replace("```json", "").replace("```", "").strip()
+        # Call LLM with tools
+        response = self.llm_provider.generate_with_tools(
+            prompt=user_input,
+            tools=[execute_trade_def],
+            system_instruction=system_instruction
+        )
         
-        try:
-            decision = json.loads(clean_text)
-            
-            if "tool" in decision and decision["tool"] == "execute_trade":
-                symbol = decision.get("symbol")
-                side = decision.get("side")
-                qty = float(decision.get("quantity", 0))
+        if isinstance(response, ToolCall):
+            if response.name == "execute_trade":
+                args = response.arguments
+                symbol = args.get("symbol")
+                side = args.get("side")
+                qty = float(args.get("quantity", 0))
                 
                 print(f"Agent: Decided to trade {side} {qty} {symbol}")
                 result = self.trading_tool.execute(symbol, side, qty)
@@ -46,8 +34,7 @@ Output ONLY JSON.
                     tool_used="execute_trade",
                     tool_result=result
                 )
-            else:
-                return AgentResponse(response_text=decision.get("message", response_text))
-                
-        except Exception as e:
-            return AgentResponse(response_text=f"Error processing request: {e}\nLLM Output: {response_text}")
+        
+        # Fallback to text response (or if unknown tool)
+        # Convert response to string just in case, though it should be str if not ToolCall
+        return AgentResponse(response_text=str(response))

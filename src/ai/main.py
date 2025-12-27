@@ -3,7 +3,7 @@ import glob
 import os
 
 from src.ai.adapters.chroma_adapter import ChromaKBAdapter
-from src.ai.adapters.llm_adapter import LLMAdapter
+from src.ai.adapters.llm.factory import LLMFactory
 from src.ai.adapters.trading_tools_adapter import TradingToolAdapter
 from src.ai.application.rag_service import RAGService
 from src.ai.application.agent_service import TraderAgent
@@ -15,7 +15,13 @@ def bootstrap_ai():
     
     # 1. Initialize Adapters
     chroma = ChromaKBAdapter()
-    llm = LLMAdapter()
+    llm = LLMFactory.create_provider()
+    if not llm:
+        print("WARNING: No LLM Provider configured. AI features will not work.")
+        # Fallback or exit? For demo, we might want to crash or handle gracefully.
+        # Let's simple return None or raise. Raising is safer for debugging.
+        raise ValueError("Could not create LLM Provider. Check .env for GOOGLE_API_KEY or OPENAI_API_KEY.")
+
     tools = TradingToolAdapter()
     
     # 2. Inject into Application Services

@@ -2,7 +2,7 @@
 
 **Date:** December 24, 2025  
 **Module:** `src/ai`  
-**Status:** Prototype (v0.1)  
+**Status:** Beta (v0.2)  
 **Authors:** CryptoFlow Engineering Team
 
 ---
@@ -52,10 +52,10 @@ When a query is received (e.g., "How does the Repository Pattern work?"):
 The Trader Agent utilizes the **ReAct (Reason + Act)** pattern to interact with the system. It bridges the gap between unstructured English and structured Python objects.
 
 ### 4.1 Intent Parsing (The "Brain")
-Currently implemented using **Deterministic Heuristics (Regex)** to simulate LLM logic without API costs.
-*   **Symbol Extraction:** Identifies uppercase tickers (e.g., "BTC", "ETH").
-*   **Side Extraction:** Detects "BUY" or "SELL" keywords.
-*   **Quantity Extraction:** regex pattern `r'(\d+(\.\d+)?)'` to find numerical values.
+Now powered by **Native Function Calling** (LLM Tool Use).
+*   **Provider:** Google Vertex AI (Gemini 2.0) or OpenAI (GPT-4o).
+*   **Mechanism:** The LLM receives a list of available tools (e.g., `execute_trade`) in its context window. It autonomously decides whether to call a tool or reply with text based on the user's prompt.
+*   **Parsers:** No manual regex parsing. The SDK returns structured `ToolCall` objects.
 
 ### 4.2 Tool Use (The "Hands")
 The Agent is isolated from the backend. It interacts only through defined Tools.
@@ -82,8 +82,12 @@ The Agent is isolated from the backend. It interacts only through defined Tools.
 ```bash
 src/ai/
 ├── domain/           # Models & Ports
-├── adapters/         # Chroma, LLM, Tools
+├── adapters/         # Infrastructure (LLM, Store, Tools)
+│   ├── llm/          # LLM Providers (Google, OpenAI)
+│   └── ...
 ├── application/      # RAG & Agent Services
+│   ├── tools/        # Tool Definitions
+│   └── ...
 └── main.py           # Composition Root
 ```
 
@@ -110,8 +114,7 @@ def execute_trade(symbol, side, quantity):
 ## 6. Future Improvements (Roadmap to Production)
 To move this from a prototype (v0.1) to a production-grade AI system (v1.0), the following upgrades are required:
 
-1.  **Upgrade "Brain":** Replace regex parsing in `trader_agent.py` with an API call to **OpenAI GPT-4o** or **Anthropic Claude 3.5**.
-    *   *Mechanism:* Use the LLM's native "Function Calling" API to output JSON parameters instead of parsing strings manually.
+1.  **Upgrade "Brain":** [COMPLETED] Migrated to Google/OpenAI Native Function Calling.
 2.  **Upgrade "Memory":** Replace BM25 in `knowledge_base.py` with **ChromaDB** or **Pinecone**.
     *   *Mechanism:* Use `sentence-transformers` to generate dense vector embeddings (Float32 arrays) for better semantic understanding (e.g., understanding that "digital gold" likely refers to "BTC").
 3.  **Guardrails:** Implement a "Risk Management" layer before the tool executes. The AI should not be allowed to place orders larger than a specific value without a secondary confirmation step.

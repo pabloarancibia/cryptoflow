@@ -21,8 +21,12 @@ src/ai/
 │   ├── rag_service.py
 │   └── agent_service.py
 ├── adapters/         # Infrastructure (Outer Hexagon)
-│   ├── chroma_adapter.py (Implements Port)
-│   ├── llm_adapter.py    (Implements Port)
+│   ├── chroma_adapter.py
+│   ├── llm/          # LLM Package
+│   │   ├── base.py
+│   │   ├── google.py
+│   │   ├── openai.py
+│   │   └── factory.py
 │   └── trading_tools_adapter.py
 └── main.py           # Composition Root (Wiring)
 ```
@@ -42,7 +46,7 @@ Contains the specific rules and workflows.
 ### Adapters Layer (The Infrastructure)
 Implementations of the Ports.
 -   **ChromaKBAdapter**: Uses `chromadb` library.
--   **LLMAdapter**: Uses `google-genai` or `openai` libraries.
+-   **LLMAdapter**: Replaced by `adapters.llm` package with `GoogleGenAIAdapter` and `OpenAIAdapter`.
 -   **TradingToolAdapter**: Connects to the broader system.
 
 ## 4. Architecture Diagram
@@ -58,7 +62,7 @@ We use a "Composition Root" pattern in `src/ai/main.py` to wire everything toget
 ```python
 # Create Adapters (Infrastructure)
 db = ChromaKBAdapter()
-llm = LLMAdapter()
+llm = LLMFactory.create_provider()
 
 # Inject into Services (Application)
 rag = RAGService(vector_store=db, llm_provider=llm)

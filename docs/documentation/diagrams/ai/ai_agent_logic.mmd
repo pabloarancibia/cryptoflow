@@ -1,9 +1,9 @@
 flowchart TD
-    Start(["User Input: Buy 10 ETH"]) --> Parse{Parse Intent}
+    Start(["User Input: Buy 10 ETH"]) --> LLM{LLM: Generate with Tools}
 
-    Parse -->|Success| Extract["Extract Params: ETH, BUY, 10"]
-    Parse -->|Failure| Ask["Ask for Clarification"]
-
+    LLM -->|Text Response| Output(["Response to User"])
+    LLM -->|ToolCall| Extract["Extract Arguments: symbol='ETH', side='buy', qty=10"]
+    
     Extract --> Tool["Call Tool: execute_trade"]
 
     subgraph "Tool Execution (Sync -> Async Bridge)"
@@ -14,4 +14,4 @@ flowchart TD
     end
 
     Commit --> Return["Return Order ID"]
-    Return --> Output(["Final Response to User"])
+    Return --> Output
