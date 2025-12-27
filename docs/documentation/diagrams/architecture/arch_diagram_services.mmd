@@ -1,0 +1,35 @@
+graph TD
+    subgraph "Client Layer"
+        Web[Web Frontend]
+        Mobile[Mobile App]
+    end
+
+    subgraph "API Gateway"
+        REST[REST API - FastAPI]
+        gRPC_GW[gRPC Gateway]
+    end
+
+    subgraph "Microservices"
+        Auth[Auth Service]
+        Order[Order Service]
+        Market[Market Data Service]
+        AI[AI Agent Service]
+    end
+
+    subgraph "Data Layer"
+        PG[(PostgreSQL)]
+        Redis[(Redis Cache)]
+        Chroma[(ChromaDB)]
+    end
+
+    Web --> REST
+    Mobile --> REST
+    
+    REST --> Auth
+    REST --> Order
+    REST --> Market
+    REST --> AI
+
+    Order --> PG
+    Market --> Redis
+    AI --> Chroma
