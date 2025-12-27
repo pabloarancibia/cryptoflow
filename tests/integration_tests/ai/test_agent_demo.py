@@ -1,11 +1,12 @@
 import pytest
-from src.ai.knowledge_base import ProjectDocumentationDB
-from src.ai.trader_agent import SimulatedAgent
+from src.ai.adapters.llm_adapter import LLMAdapter
+from src.ai.adapters.trading_tools_adapter import TradingToolAdapter
+from src.ai.application.agent_service import TraderAgent
 
 @pytest.mark.integration
 class TestAgentDemoIntegration:
     """
-    Integration tests for the AI Agent Workflow.
+    Integration tests for the AI Agent Workflow (Hexagonal Architecture).
     Migrated from scripts/run_ai_demo.py
     """
 
@@ -14,35 +15,26 @@ class TestAgentDemoIntegration:
         Verifies that the agent can process a prompt and return a response.
         Mocking backend dependencies to avoid real DB calls.
         """
-        from unittest.mock import AsyncMock
-
-        # Mock dependencies used in execute_trade
-        mock_uow = mocker.patch("src.ai.trader_agent.SqlAlchemyUnitOfWork")
+        # Mock LLM to return a predictable JSON for trading
+        # checking if we need to mock LLMAdapter provided it acts as port
         
-        mock_exchange_cls = mocker.patch("src.ai.trader_agent.MockExchangeAdapter")
-        mock_exchange_instance = mock_exchange_cls.return_value
-        mock_exchange_instance.get_current_price = AsyncMock(return_value=50000.0)
-
-        mock_use_case_cls = mocker.patch("src.ai.trader_agent.PlaceOrderUseCase")
-        mock_use_case_instance = mock_use_case_cls.return_value
-        mock_use_case_instance.execute = AsyncMock()
+        mock_llm = mocker.Mock(spec=LLMAdapter)
+        mock_llm.generate_text.return_value = '{"tool": "execute_trade", "symbol": "BTC", "side": "buy", "quantity": 1.0}'
         
-        # Setup mock return values
-        mock_use_case_instance.execute.return_value.order_id = "test-agent-order-123"
-        mock_use_case_instance.execute.return_value.price = 50000.0
-        
-        # 1. RAG Check
-        kb = ProjectDocumentationDB(docs_path="docs/")
-        assert kb is not None
+        # Real or Mocked Tool Adapter
+        # Using real adapter but internal methods are mocked if needed
+        # For now, TradingToolAdapter has internal mock logic, so safe to use directly
+        tools = TradingToolAdapter()
         
         # 2. Agent Execution
-        agent = SimulatedAgent()
+        agent = TraderAgent(llm_provider=mock_llm, trading_tool=tools)
         
-        prompt = "Please place a SELL order for 1 BTC"
+        prompt = "Please place a BUY order for 1 BTC"
         response = agent.run(prompt)
         
         # Verify response structure
         assert response is not None
-        assert "SELL" in str(response)
-        assert "BTC" in str(response)
-        assert "test-agent-order-123" in str(response)
+        assert response.tool_used == "execute_trade"
+        assert response.tool_result["symbol"] == "BTC"
+        assert response.tool_result["side"] == "buy"
+        assert response.tool_result["status"] == "filled"
