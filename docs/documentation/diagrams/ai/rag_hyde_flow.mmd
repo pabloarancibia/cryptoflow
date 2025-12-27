@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant User
+    participant KB as KnowledgeBase
+    participant Factory as LLMFactory
+    participant Provider as LLMProvider (Google/OpenAI)
+    participant Model as Embedding Model
+    participant DB as ChromaDB
+
+    Note over Factory: Strategy Pattern Selection
+    User->>KB: query("How does X work?")
+    KB->>Factory: create_provider()
+    Factory-->>KB: Returns Concrete Provider (e.g. GoogleGemini)
+    
+    rect rgb(240, 248, 255)
+        Note over KB, Provider: HyDE Process
+        KB->>Provider: generate_text("Write a technical paragraph about X...")
+        Provider-->>KB: Returns "Hypothetical Document (Hallucination)"
+    end
+
+    KB->>Model: encode(Hypothetical Document)
+    Model-->>KB: Returns Vector Embeddings
+
+    KB->>DB: query(embeddings)
+    DB-->>KB: Returns Real Documents (Top N matches)
+    KB-->>User: Display Results

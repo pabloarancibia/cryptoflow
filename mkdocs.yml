@@ -29,6 +29,7 @@ nav:
     - Implementation Guide: documentation/grpc_implementation_guide.md
     - AI Module: documentation/ai_module.md
     - Semantic Search: documentation/semantic_search_impl.md
+    - RAG Optimization (Phase 2): documentation/rag_optimization.md
     - Diagram Preview: documentation/diagram_preview.md
   
   - Wiki:
