@@ -30,6 +30,7 @@ nav:
     - AI Module: documentation/ai_module.md
     - Semantic Search: documentation/semantic_search_impl.md
     - RAG Optimization (Phase 2): documentation/rag_optimization.md
+    - Hexagonal Architecture: documentation/hexagonal_architecture.md
     - Diagram Preview: documentation/diagram_preview.md
   
   - Wiki:

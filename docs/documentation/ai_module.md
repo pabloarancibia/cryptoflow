@@ -79,12 +79,12 @@ The Agent is isolated from the backend. It interacts only through defined Tools.
 ## 5. Implementation Details & Code Structure
 
 ### Directory Map
-```plaintext
+```bash
 src/ai/
-├── knowledge_base.py    # Class ProjectDocumentationDB (RAG Logic)
-├── trader_agent.py      # Class SimulatedAgent & execute_trade Tool
-tests/integration_tests/ai/
-└── test_agent_demo.py   # Integration entrypoint
+├── domain/           # Models & Ports
+├── adapters/         # Chroma, LLM, Tools
+├── application/      # RAG & Agent Services
+└── main.py           # Composition Root
 ```
 
 ### Key Technical Challenge: The Async Bridge

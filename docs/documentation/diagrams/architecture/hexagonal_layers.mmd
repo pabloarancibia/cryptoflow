@@ -1,0 +1,39 @@
+flowchart TD
+    subgraph External_Systems [External Systems]
+        User[User / API]
+        DB[(ChromaDB)]
+        LLM[Google/OpenAI]
+    end
+
+    subgraph Hexagon [Application Hexagon]
+        subgraph Ports [Ports & Adapters]
+            RestAdapter[REST Adapter]
+            ChromaAdapter[Chroma Adapter]
+            LLMAdapter[LLM Adapter]
+        end
+
+        subgraph Application [Application Layer]
+            RAGService[RAG Service]
+            AgentService[Trader Agent]
+        end
+
+        subgraph Domain [Domain Layer]
+            Models[Domain Models]
+            Interfaces[Port Interfaces]
+        end
+    end
+
+    User --> RestAdapter
+    RestAdapter --> Application
+    Application --> Domain
+    
+    Application --> Interfaces
+    ChromaAdapter -.->|Implements| Interfaces
+    LLMAdapter -.->|Implements| Interfaces
+    
+    ChromaAdapter --> DB
+    LLMAdapter --> LLM
+
+    style Domain fill:#f9f,stroke:#333
+    style Application fill:#bbf,stroke:#333
+    style Ports fill:#bfb,stroke:#333
