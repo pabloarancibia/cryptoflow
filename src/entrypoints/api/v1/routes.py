@@ -48,7 +48,11 @@ async def place_order(order_data: OrderCreate):
         return OrderResponse(
             order_id=grpc_res.order_id,
             status=grpc_res.status,
-            message=grpc_res.message
+            symbol=order_data.symbol,
+            quantity=order_data.quantity,
+            price=order_data.price,
+            side=order_data.side,
+            metadata=order_data.metadata or {}
         )
     except Exception as e:
         # Map gRPC errors to HTTP exceptions if needed
