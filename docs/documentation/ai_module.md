@@ -83,8 +83,8 @@ The Agent is isolated from the backend. It interacts only through defined Tools.
 src/ai/
 ├── knowledge_base.py    # Class ProjectDocumentationDB (RAG Logic)
 ├── trader_agent.py      # Class SimulatedAgent & execute_trade Tool
-scripts/
-└── run_ai_demo.py       # Integration entrypoint
+tests/integration_tests/ai/
+└── test_agent_demo.py   # Integration entrypoint
 ```
 
 ### Key Technical Challenge: The Async Bridge

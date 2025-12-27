@@ -24,11 +24,15 @@ All tests are located in the `tests/` directory at the project root:
 ```
 tests/
 ├── factories/          # Reusable data factories
-│   └── ai_factories.py # Factories for AI module
+│   ├── __init__.py     # Exposes factories
+│   ├── ai_factories.py # Factories for AI module
+│   └── order_factory.py# Factories for Orders
 ├── unit_tests/         # Unit tests (isolated)
-│   └── ai/             # AI module tests
-│       └── test_knowledge_base.py
+│   ├── ai/             # AI module unit tests
+│   └── ...
 └── integration_tests/  # Integration tests (connected)
+    ├── ai/             # AI API & Semantic Search integration
+    └── test_api_routes.py # API Route integration
 ```
 
 ## Workflow
@@ -73,4 +77,9 @@ pytest
 To run a specific test file:
 ```bash
 pytest tests/unit_tests/ai/test_knowledge_base.py
+```
+
+To run integration tests specifically:
+```bash
+pytest -m integration
 ```

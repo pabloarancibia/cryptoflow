@@ -55,3 +55,16 @@ Required packages in `requirements.txt`:
 ## Usage
 
 See the [AI Module](../ai_module.md) page for general usage instructions.
+
+## Verification
+
+To verify the implementation, run the semantic search integration test:
+
+```bash
+pytest tests/integration_tests/ai/test_semantic_search.py -v
+```
+
+This ensures that:
+1. The ChromaDB service is reachable.
+2. Ingestion works correctly.
+3. Queries return semantically relevant results.
