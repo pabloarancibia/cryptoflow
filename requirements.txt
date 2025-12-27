@@ -66,5 +66,5 @@ factory-boy
 pytest-mock
 python-dotenv
 openai==2.14.0
-google-generativeai
+google-genai
 

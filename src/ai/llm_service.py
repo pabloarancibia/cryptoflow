@@ -32,22 +32,25 @@ class OpenAIProvider(LLMProvider):
 
 class GoogleGeminiProvider(LLMProvider):
     def __init__(self, api_key: str):
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
+        from google import genai
+        self.client = genai.Client(api_key=api_key)
+        self.model = "gemini-1.5-flash"
 
     def generate_text(self, prompt: str, system_instruction: str = None) -> str:
-        # Gemini specific handling
-        # System instructions can be tricky with Gemini-Pro basic API, often just prepended to prompt
-        # But 'gemini-1.5-pro' supports system instructions properly. 
-        # For 'gemini-pro' (cheaper/standard), prepending is safer.
-        
-        full_prompt = prompt
-        if system_instruction:
-            full_prompt = f"System Instruction: {system_instruction}\n\nUser Question: {prompt}"
-
         try:
-            response = self.model.generate_content(full_prompt)
+            # google-genai supports system instructions via config
+            config = None
+            if system_instruction:
+                # Basic prompting with system instruction in the message flow logic
+                # or simplified by just calling generate_content
+                pass
+            
+            # For simplicity with the new SDK:
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config={'system_instruction': system_instruction} if system_instruction else None
+            )
             return response.text
         except Exception as e:
             print(f"Google Gemini Error: {e}")
