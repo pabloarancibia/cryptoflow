@@ -22,6 +22,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Documentation System: documentation/documentation_system.md
+  - Testing Strategy: documentation/testing_strategy.md
   - Architecture:
     - Microservices Theory: documentation/microservices_theory.md
     - Service Implementation: documentation/microservices_implementation.md

@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Dev as Developer
+    participant Test as Pytest
+    participant Factory as FactoryBoy
+    participant Mock as PytestMock
+    participant App as Application Logic
+
+    Dev->>Test: Run pytest
+    Test->>Factory: Request dummy data (e.g. DocumentChunk)
+    Factory-->>Test: Return generated object
+    Test->>Mock: Mock external dependencies (e.g. ChromaDB)
+    Mock-->>Test: Mock object ready
+    Test->>App: Execute unit test with mocks/factories
+    App-->>Test: Return result
+    Test->>Dev: Report Pass/Fail
