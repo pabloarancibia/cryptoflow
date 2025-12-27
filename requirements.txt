@@ -57,5 +57,7 @@ mkdocs-material==9.5.34
 plantuml-markdown==3.11.1
 pymdown-extensions==10.10.1
 # Lightweight AI Simulation
-chromadb==0.4.22
-sentence-transformers==2.3.1
+chromadb==0.5.0
+sentence-transformers==2.7.0
+numpy<2.0
+pysqlite3-binary

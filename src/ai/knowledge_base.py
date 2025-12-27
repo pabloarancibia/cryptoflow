@@ -1,5 +1,13 @@
 import os
 import glob
+# Patch sqlite3 for ChromaDB compatibility
+try:
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 import chromadb
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
@@ -10,15 +18,23 @@ class ProjectDocumentationDB:
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
         
         # Connect to ChromaDB
-        # Try connecting to 'chroma' host (Docker service name) first
+        # When running locally (outside Docker), we should try localhost:8001 directly.
+        # When running in Docker, we should try the service name 'chroma'
+        
         try:
-            print("Attempting to connect to ChromaDB at chroma:8000...")
-            self.chroma_client = chromadb.HttpClient(host="chroma", port=8000)
+            print("Attempting to connect to ChromaDB at localhost:8001...")
+            self.chroma_client = chromadb.HttpClient(host="localhost", port=8001)
             self.chroma_client.heartbeat()
-            print("Connected to ChromaDB at chroma:8000")
-        except Exception:
-            print("Could not connect to chroma:8000, falling back to localhost:8000")
-            self.chroma_client = chromadb.HttpClient(host="localhost", port=8000)
+            print("Connected to ChromaDB at localhost:8001")
+        except Exception as e:
+            print(f"Could not connect to localhost:8001: {e}, attempting chroma:8000...")
+            try:
+                self.chroma_client = chromadb.HttpClient(host="chroma", port=8000)
+                self.chroma_client.heartbeat()
+                print("Connected to ChromaDB at chroma:8000")
+            except Exception as e2:
+                 print(f"Could not connect to ChromaDB: {e2}. Ensure the service is running.")
+                 raise
 
         self.collection = self.chroma_client.get_or_create_collection(name="project_docs")
 
