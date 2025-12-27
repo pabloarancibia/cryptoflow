@@ -21,20 +21,24 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Documentation System: documentation/documentation_system.md
-  - Testing Strategy: documentation/testing_strategy.md
+  - Getting Started:
+    - Development Guide: documentation/development_guide.md
+    - Environment Variables: documentation/environment_variables.md
+    - API Reference: documentation/api_reference.md
   - Architecture:
+    - Hexagonal Architecture: documentation/hexagonal_architecture.md
     - Microservices Theory: documentation/microservices_theory.md
     - Service Implementation: documentation/microservices_implementation.md
-    - Implementation Guide: documentation/grpc_implementation_guide.md
+    - gRPC Implementation Guide: documentation/grpc_implementation_guide.md
+    - Diagram Preview: documentation/diagram_preview.md
+  - AI & Machine Learning:
     - AI Module: documentation/ai_module.md
     - Semantic Search: documentation/semantic_search_impl.md
     - RAG Optimization (Phase 2): documentation/rag_optimization.md
-    - Hexagonal Architecture: documentation/hexagonal_architecture.md
-    - Diagram Preview: documentation/diagram_preview.md
-  
+  - Development:
+    - Testing Strategy: documentation/testing_strategy.md
+    - Documentation System: documentation/documentation_system.md
   - Wiki:
     - Architecture Evolution (Weeks 1-4): wiki/architecture_evolution.md
-    
   - Project Info:
     - README: README.md

@@ -1,13 +1,52 @@
 # Welcome to CryptoFlow
 
-CryptoFlow is a modular, high-performance trading simulation system designed to demonstrate advanced Software Engineering principles in Python.
+CryptoFlow is a modular, high-performance trading simulation system designed to demonstrate advanced Software Engineering principles in Python. The project emphasizes Clean Architecture, Gang of Four (GoF) Design Patterns, and strict Object-Oriented Programming (OOP) to create a scalable, transactional trading engine.
 
-## Documentation
+## 🚀 Getting Started
 
-- **[Documentation System](documentation/documentation_system.md)**: Overview of the documentation system and its components.
+New to CryptoFlow? Start here:
 
-- **[Microservices Theory](documentation/microservices_theory.md)**: Conceptual guide to Monoliths vs. Microservices, gRPC, and Protocol Buffers.
-- **[gRPC Implementation Guide](documentation/grpc_implementation_guide.md)**: Deep dive into the technical implementation of Market Data and Order services, threading models, and generated code.
+1. **[README](../README.md)**: Complete setup instructions and quick start guide
+2. **[Development Guide](documentation/development_guide.md)**: Development workflow and best practices
+3. **[Environment Variables](documentation/environment_variables.md)**: Configuration guide
 
-## Quick Start
-Refer to the [README](README.md) for setup and installation instructions.
+## 📚 Documentation Sections
+
+### Architecture & Design
+
+- **[Hexagonal Architecture](documentation/hexagonal_architecture.md)**: Clean Architecture and Hexagonal Architecture patterns
+- **[Architecture Evolution](wiki/architecture_evolution.md)**: Evolution of the system architecture (Weeks 1-4)
+- **[Documentation System](documentation/documentation_system.md)**: Overview of the documentation system and its components
+
+### Microservices & gRPC
+
+- **[Microservices Theory](documentation/microservices_theory.md)**: Conceptual guide to Monoliths vs. Microservices, gRPC, and Protocol Buffers
+- **[Microservices Implementation](documentation/microservices_implementation.md)**: Service implementation details
+- **[gRPC Implementation Guide](documentation/grpc_implementation_guide.md)**: Deep dive into the technical implementation of Market Data and Order services, threading models, and generated code
+
+### AI & Machine Learning
+
+- **[AI Module](documentation/ai_module.md)**: RAG system and agentic workflows architecture
+- **[Semantic Search](documentation/semantic_search_impl.md)**: Implementation of semantic search capabilities
+- **[RAG Optimization](documentation/rag_optimization.md)**: Phase 2 optimizations for RAG system
+
+### API & Development
+
+- **[API Reference](documentation/api_reference.md)**: Complete API endpoint documentation with examples
+- **[Development Guide](documentation/development_guide.md)**: Development workflow, testing, and contribution guidelines
+- **[Environment Variables](documentation/environment_variables.md)**: Configuration and environment setup
+
+### Testing & Quality
+
+- **[Testing Strategy](documentation/testing_strategy.md)**: Testing approach, unit tests, integration tests, and best practices
+
+### Visualizations
+
+- **[Diagram Preview](documentation/diagram_preview.md)**: Visual architecture diagrams and flow charts
+
+## 🎯 Quick Links
+
+- **Main README**: [README.md](../README.md)
+- **Project Structure**: See [README.md](../README.md#-project-structure-clean-architecture)
+- **API Endpoints**: [API Reference](documentation/api_reference.md)
+- **Running Tests**: [Testing Strategy](documentation/testing_strategy.md)

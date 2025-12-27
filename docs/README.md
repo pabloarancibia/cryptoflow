@@ -1,88 +1,77 @@
-CryptoFlow — High-Frequency Trading Engine
+# CryptoFlow Documentation
 
-CryptoFlow is a modular, high-performance trading simulation system designed to demonstrate advanced Software Engineering principles in Python. The project emphasizes Clean Architecture, Gang of Four (GoF) Design Patterns, and strict Object-Oriented Programming (OOP) to create a scalable, transactional trading engine.
+Welcome to the CryptoFlow documentation! This directory contains comprehensive technical documentation for the CryptoFlow High-Frequency Trading Engine.
 
-🚀 Key Features
+## 📚 Documentation Overview
 
-Polymorphic Asset Modeling: Abstract handling of Crypto and Fiat currencies using strict OOP.
+This documentation is built using [MkDocs](https://www.mkdocs.org/) with the [Material theme](https://squidfunk.github.io/mkdocs-material/). It provides detailed guides on architecture, implementation, API usage, and development practices.
 
-Memory Optimization: Utilizes __slots__ and Generators for processing high-volume market data with low memory footprint.
+## 🚀 Viewing Documentation
 
-Pluggable Strategies: Strategy Pattern implementation allowing hot-swapping of algorithms (RSI, Moving Average).
+### Local Development
 
-Resilient Architecture: Transactional safety via custom Context Managers and transactional rollbacks.
+To view the documentation locally:
 
-Event-Driven: Asynchronous task processing using Celery, RabbitMQ/Redis, and Observer patterns.
+```bash
+# Install MkDocs and dependencies (if not already installed)
+pip install mkdocs-material pymdown-extensions
 
-Cloud Native: Fully containerized with Docker Compose and ready for Kubernetes deployment.
+# Serve documentation locally
+mkdocs serve
+```
 
-🛠 Tech Stack
+Then open `http://localhost:8000` in your browser.
 
-Language: Python 3.12+
+### Building Static Site
 
-Web Framework: FastAPI
+To build a static documentation site:
 
-Database: PostgreSQL with SQLAlchemy 2.0 (Async)
+```bash
+mkdocs build
+```
 
-Migrations: Alembic
+The generated site will be in the `site/` directory.
 
-Caching & Locking: Redis
+## 📖 Documentation Structure
 
-Task Queue: Celery with RabbitMQ/Redis
+- **[index.md](index.md)**: Main documentation index with navigation
+- **[documentation/](documentation/)**: Technical documentation files
+  - Architecture guides
+  - API references
+  - Implementation guides
+  - Development guides
+- **[wiki/](wiki/)**: Architecture evolution and notes
+- **[README.md](README.md)**: This file
 
-Infrastructure: Docker, Kubernetes (K8s), Terraform
+## 🔧 Documentation Maintenance
 
-📂 Project Structure (Clean Architecture)
+### Adding New Documentation
 
-cryptoflow/
-├── app/
-│   ├── domain/          # Enterprise business logic (Entities, Value Objects)
-│   ├── use_cases/       # Application business logic
-│   ├── interfaces/      # Adapters (API Routes, CLI)
-│   └── infrastructure/  # DB, External APIs, Redis implementation
-├── tests/               # Unit and Integration tests
-├── data/                # Local data storage (ignored by git)
-├── docker-compose.yml
-└── main.py
+1. Create a new Markdown file in `documentation/` or appropriate subdirectory
+2. Add the file to `mkdocs.yml` navigation
+3. Follow existing documentation style and format
+4. Include diagrams using Mermaid syntax when helpful
 
+### Documentation Standards
 
-⚡ Quick Start
+- Use clear, descriptive headings
+- Include code examples where relevant
+- Add diagrams for complex concepts
+- Keep documentation up-to-date with code changes
+- Use consistent formatting and style
 
-Prerequisites
+## 📝 Documentation Tools
 
-Python 3.12+
+- **MkDocs**: Documentation generator
+- **Material Theme**: Modern, responsive theme
+- **Mermaid**: Diagram generation (flowcharts, sequence diagrams, etc.)
+- **Markdown**: Documentation format
 
-Docker & Docker Compose
+## 🔗 Quick Links
 
-Redis (for local dev)
-
-Local Setup
-
-Clone the repository
-
-git clone [https://github.com/yourusername/cryptoflow.git](https://github.com/yourusername/cryptoflow.git)
-cd cryptoflow
-
-
-Create Virtual Environment
-
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-
-Install Dependencies
-
-pip install -r requirements.txt
-
-
-Run the Server
-
-uvicorn main:app --reload
-
-
-Docker Setup
-
-docker-compose up --build
+- [Main README](../README.md): Project overview and setup
+- [Documentation Index](index.md): Complete documentation navigation
+- [MkDocs Configuration](../mkdocs.yml): Documentation build configuration
 
 
 🗺️ Implementation Roadmap
