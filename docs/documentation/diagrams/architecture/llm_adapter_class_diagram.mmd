@@ -1,0 +1,29 @@
+classDiagram
+    class ILLMProvider {
+        <<interface>>
+        +generate_text(prompt: str) str
+        +generate_with_tools(prompt: str, tools: List[Dict]) Union[str, ToolCall]
+    }
+
+    class OpenAIAdapter {
+        -client: OpenAI
+        -model_name: str
+        +generate_text(prompt: str) str
+        +generate_with_tools(prompt: str, tools: List[Dict]) Union[str, ToolCall]
+    }
+
+    class GoogleGenAIAdapter {
+        -client: GenerativeModel
+        +generate_text(prompt: str) str
+        +generate_with_tools(prompt: str, tools: List[Dict]) Union[str, ToolCall]
+    }
+
+    class ToolCall {
+        +name: str
+        +arguments: Dict
+    }
+
+    ILLMProvider <|-- OpenAIAdapter
+    ILLMProvider <|-- GoogleGenAIAdapter
+    OpenAIAdapter ..> ToolCall : returns
+    GoogleGenAIAdapter ..> ToolCall : returns

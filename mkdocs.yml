@@ -35,6 +35,7 @@ nav:
     - AI Module: documentation/ai_module.md
     - Semantic Search: documentation/semantic_search_impl.md
     - RAG Optimization (Phase 2): documentation/rag_optimization.md
+    - LLM Tool Calling (Phase 3): documentation/openai_tool_calling.md
   - Development:
     - Testing Strategy: documentation/testing_strategy.md
     - Documentation System: documentation/documentation_system.md

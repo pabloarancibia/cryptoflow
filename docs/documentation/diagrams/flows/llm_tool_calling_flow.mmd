@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant User
+    participant Agent as TraderAgent
+    participant Adapter as LLM Adapter
+    participant LLM as LLM Provider API
+    participant Tools as Application Tools
+
+    User->>Agent: "Buy 1.5 BTC"
+    Agent->>Adapter: generate_with_tools(prompt, tools)
+    Adapter->>LLM: API call with tools parameter
+    LLM-->>Adapter: ToolCall(name="execute_trade", args={...})
+    Adapter-->>Agent: ToolCall Object
+    Agent->>Agent: Verify ToolCall name
+    Agent->>Tools: execute_trade(symbol="BTC", side="buy", quantity=1.5)
+    Tools-->>Agent: Result String
+    Agent-->>User: "Executed trade: ..."
