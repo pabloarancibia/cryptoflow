@@ -33,6 +33,7 @@ nav:
     - Service Implementation: documentation/microservices_implementation.md
     - gRPC Implementation Guide: documentation/grpc_implementation_guide.md
     - Diagram Preview: documentation/diagram_preview.md
+    - Compute Strategy: documentation/compute_architecture_strategy.md
   - AI & Machine Learning:
     - AI Module: documentation/ai_module.md
     - MCP Implementation: documentation/mcp_implementation.md
