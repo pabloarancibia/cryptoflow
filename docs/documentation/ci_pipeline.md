@@ -33,7 +33,7 @@ This job verifies that the application can be containerized successfully.
 This job ensures that the Kubernetes manifests are syntactically correct.
 
 - **Parallel Execution**: Runs in parallel with Quality Control as it doesn't depend on code quality, only on manifest syntax.
-- **Tool**: Uses `kubeval` to validate the files against Kubernetes schemas.
+- **Tool**: Uses `kubeconform` to validate the files (a modern replacement for `kubeval`).
 - **Scope**: Checks all `.yaml` files in the `k8s/` directory.
 
 ## Configuration

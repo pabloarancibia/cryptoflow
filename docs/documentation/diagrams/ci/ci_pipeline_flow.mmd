@@ -22,8 +22,8 @@ graph TD
 
     subgraph Job3_K8s [Kubernetes Validation]
         K8sVal --> Checkout3[Checkout Code]
-        Checkout3 --> InstallKubeval[Install Kubeval]
-        InstallKubeval --> Validate[Validate k8s/*.yaml]
+        Checkout3 --> InstallKubecon[Install Kubeconform]
+        InstallKubecon --> Validate[Validate k8s/*.yaml]
     end
 
     Tests -- Failure --> Fail([CI Pipeline Failed])
