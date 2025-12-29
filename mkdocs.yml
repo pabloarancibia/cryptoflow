@@ -25,6 +25,7 @@ nav:
     - Development Guide: documentation/development_guide.md
     - Environment Variables: documentation/environment_variables.md
     - API Reference: documentation/api_reference.md
+    - Docker Deployment: documentation/docker_deployment.md
   - Architecture:
     - Hexagonal Architecture: documentation/hexagonal_architecture.md
     - Microservices Theory: documentation/microservices_theory.md
