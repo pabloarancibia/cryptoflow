@@ -1,0 +1,14 @@
+graph TD
+    subgraph Azure_Cloud["Azure Cloud"]
+        subgraph Resource_Group["Resource Group: rg-cryptoflow-prod"]
+            ACR["Azure Container Registry (ACR)<br/>Sku: Basic<br/>Project: CryptoFlow"]
+            AKS["Azure Kubernetes Service (AKS)<br/>VM Size: Standard_B2s<br/>Nodes: 1"]
+        end
+    end
+    
+    User["User/Developer"] -->|Push Images| ACR
+    User -->|Kubectl Apply| AKS
+    AKS -->|Pull Images| ACR
+    
+    classDef azure fill:#0072C6,stroke:#fff,stroke-width:2px,color:#fff;
+    class ACR,AKS azure;
