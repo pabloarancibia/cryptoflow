@@ -122,7 +122,7 @@ def test_azure_integration():
         print(f"Response Type: {type(response).__name__}")
         
         if isinstance(response, ToolCall):
-            print(f"SUCCESS: Tool call detected")
+            print("SUCCESS: Tool call detected")
             print(f"  Function: {response.name}")
             print(f"  Arguments: {response.arguments}")
         else:
@@ -144,10 +144,10 @@ def test_azure_integration():
         print(f"Response Type: {type(response).__name__}")
         
         if isinstance(response, str):
-            print(f"SUCCESS: Text response")
+            print("SUCCESS: Text response")
             print(f"  Response: {response}")
         else:
-            print(f"FAILURE: Expected text, got ToolCall")
+            print("FAILURE: Expected text, got ToolCall")
     except Exception as e:
         print(f"ERROR: Chitchat failed: {e}")
     

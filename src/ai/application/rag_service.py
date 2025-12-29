@@ -1,6 +1,4 @@
-from typing import List
 from src.ai.domain.ports import IVectorStore, ILLMProvider
-from src.ai.domain.models import DocumentChunk
 
 class RAGService:
     def __init__(self, vector_store: IVectorStore, llm_provider: ILLMProvider):

@@ -1,4 +1,3 @@
-import os
 import pytest
 from src.ai.adapters.chroma_adapter import ChromaKBAdapter
 from src.ai.domain.models import DocumentChunk

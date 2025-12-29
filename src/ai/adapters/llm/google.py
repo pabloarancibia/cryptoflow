@@ -1,5 +1,4 @@
-import os
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Union
 from google import genai
 from google.genai import types
 from src.ai.adapters.llm.base import BaseLLMAdapter

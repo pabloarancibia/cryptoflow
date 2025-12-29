@@ -158,7 +158,7 @@ class AzureSearchAdapter(IVectorStore):
         
         # Upload to Azure Search
         try:
-            result = self.search_client.upload_documents(documents=search_docs)
+            self.search_client.upload_documents(documents=search_docs)
             print(f"Azure Search: Ingested {len(docs)} documents.")
         except Exception as e:
             print(f"Azure Search Error during ingestion: {e}")

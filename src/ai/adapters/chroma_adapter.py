@@ -15,7 +15,7 @@ class ChromaKBAdapter(IVectorStore):
             print("Connecting to ChromaDB at localhost:8001...")
             self.client = chromadb.HttpClient(host="localhost", port=8001)
             self.client.heartbeat()
-        except:
+        except Exception:
             print("Fallback to chroma:8000 (Docker network)...")
             self.client = chromadb.HttpClient(host="chroma", port=8000)
             

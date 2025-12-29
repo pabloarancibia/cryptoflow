@@ -1,6 +1,5 @@
 import grpc
 import time
-import sys
 
 from src.generated import market_data_pb2
 from src.generated import market_data_pb2_grpc

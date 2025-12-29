@@ -14,7 +14,6 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from src.config import DATABASE_URL
 from src.infrastructure.database import Base
-from src.infrastructure.models import OrderModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

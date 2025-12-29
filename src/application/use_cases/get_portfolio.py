@@ -6,7 +6,7 @@ Follows the same pattern as PlaceOrderUseCase with dependency injection.
 """
 
 import structlog
-from typing import Dict, List
+from typing import Dict
 from src.application.ports.interfaces import AbstractUnitOfWork
 from pydantic import BaseModel, ConfigDict
 

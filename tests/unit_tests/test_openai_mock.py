@@ -9,7 +9,7 @@ from src.ai.domain.models import ToolCall
 class TestOpenAIAdapter(unittest.TestCase):
     def setUp(self):
         self.api_key = "fake-key"
-        with patch("openai.OpenAI") as MockClient:
+        with patch("openai.OpenAI"):
             self.adapter = OpenAIAdapter(api_key=self.api_key)
             self.mock_client = self.adapter.client
 

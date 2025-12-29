@@ -1,5 +1,4 @@
 import cProfile
-import pstats
 from domain.entities import Order
 from domain.market_data import MarketDataReader
 from config import MARKET_DATA_CSV
@@ -24,7 +23,7 @@ def run_backtest():
 
         if signal > 100:
             # Order uses __slots__, so this is fast
-            order = Order(
+            Order(
                 order_id=tick['timestamp'],
                 symbol="BTC",
                 quantity=1.0,

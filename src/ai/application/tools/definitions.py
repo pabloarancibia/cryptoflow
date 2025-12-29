@@ -1,4 +1,3 @@
-from typing import List, Dict, Any
 
 # Tool Definition for execute_trade
 execute_trade_def = {

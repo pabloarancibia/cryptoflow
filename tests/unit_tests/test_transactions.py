@@ -6,7 +6,7 @@ from src.utils.transactions import TransactionSession, transactional
 def test_transaction_commit():
     """Ensure session commits when no error occurs."""
     with TransactionSession("TX-001") as session:
-        x = 1 + 1  # Do some work
+        pass  # Do some work
 
     assert session.status == "COMMITTED"
 
@@ -14,7 +14,7 @@ def test_transaction_commit():
 def test_transaction_rollback():
     """Ensure session rolls back when an error occurs."""
     with pytest.raises(ValueError):
-        with TransactionSession("TX-002") as session:
+        with TransactionSession("TX-002"):
             raise ValueError("Not enough funds!")
 
     # We can't easily check 'session.status' here because the context manager

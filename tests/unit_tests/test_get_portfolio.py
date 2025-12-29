@@ -5,7 +5,7 @@ Tests the portfolio retrieval use case with mocked dependencies.
 """
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from src.application.use_cases.get_portfolio import GetPortfolioUseCase, PortfolioResponse
 
 

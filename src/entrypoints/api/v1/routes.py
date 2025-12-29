@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from src.application.dtos import OrderCreate, OrderResponse
 from src.application.use_cases.analyze_market import AnalysisRequest, AnalysisResponse, AnalyzeMarketUseCase
 from src.application.use_cases.run_backtest import RunBacktestUseCase

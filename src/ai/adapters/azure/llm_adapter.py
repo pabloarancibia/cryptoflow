@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, Dict, Union, Any, Callable
+from typing import List, Dict, Union
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.functions import kernel_function

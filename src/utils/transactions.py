@@ -1,7 +1,6 @@
 # src/utils/transactions.py
 import functools
 import time
-from typing import Optional
 
 
 class TransactionSession:

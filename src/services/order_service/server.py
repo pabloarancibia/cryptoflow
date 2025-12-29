@@ -5,7 +5,6 @@ import json
 import os
 import aio_pika
 import grpc
-from concurrent import futures
 
 from src.generated import order_pb2
 from src.generated import order_pb2_grpc

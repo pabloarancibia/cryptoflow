@@ -17,7 +17,6 @@ Architecture Integration:
 """
 
 import json
-import asyncio
 import logging
 import sys
 from typing import Optional
@@ -369,8 +368,8 @@ if __name__ == "__main__":
     print("=== CryptoFlow MCP Server ===", file=sys.stderr)
     print("Architecture: Hexagonal (Ports & Adapters)", file=sys.stderr)
     print("Services initialized:", file=sys.stderr)
-    print(f"  ✓ Portfolio Use Case", file=sys.stderr)
-    print(f"  ✓ Place Order Use Case", file=sys.stderr)
+    print("  ✓ Portfolio Use Case", file=sys.stderr)
+    print("  ✓ Place Order Use Case", file=sys.stderr)
     print(f"  {'✓' if services.rag_service else '✗'} RAG Service", file=sys.stderr)
     print(f"  {'✓' if services.trader_agent else '✗'} Trader Agent", file=sys.stderr)
     

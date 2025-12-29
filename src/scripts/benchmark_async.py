@@ -14,7 +14,7 @@ async def run_benchmark():
     symbols = ["BTC", "ETH", "SOL", "ADA", "DOT", "XRP", "LTC", "DOGE", "AVAX", "MATIC"]
 
     print(f"--- Benchmarking Fetch for {len(symbols)} Symbols ---")
-    print(f"Simulated Latency per call: 0.2s\n")
+    print("Simulated Latency per call: 0.2s\n")
 
     # ensure hit the sleep() latency
     print("Clearing cache...")

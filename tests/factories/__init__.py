@@ -1,1 +1,1 @@
-from .order_factory import OrderFactory
+from .order_factory import OrderFactory as OrderFactory

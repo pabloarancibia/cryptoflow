@@ -1,0 +1,35 @@
+graph TD
+    Start([Push / Pull Request]) --> QA[Quality Control Job]
+    
+    subgraph Job1_QC [Quality Control]
+        QA --> Checkout1[Checkout Code]
+        Checkout1 --> SetupPy[Setup Python 3.11]
+        SetupPy --> InstallDeps[Install Dependencies]
+        InstallDeps --> Lint[Run Linting (Ruff)]
+        Lint --> Tests[Run Tests (Pytest)]
+    end
+
+    QA -- Success --> DockerBuild[Docker Build Job]
+    
+    subgraph Job2_Build [Docker Build]
+        DockerBuild --> Checkout2[Checkout Code]
+        Checkout2 --> SetupBuildx[Setup buildx]
+        SetupBuildx --> Cache[Cache Layers]
+        Cache --> Build[Build Image]
+    end
+
+    Start --> K8sVal[Kubernetes Validation Job]
+
+    subgraph Job3_K8s [Kubernetes Validation]
+        K8sVal --> Checkout3[Checkout Code]
+        Checkout3 --> InstallKubeval[Install Kubeval]
+        InstallKubeval --> Validate[Validate k8s/*.yaml]
+    end
+
+    Tests -- Failure --> Fail([CI Pipeline Failed])
+    Lint -- Failure --> Fail
+    Build -- Failure --> Fail
+    Validate -- Failure --> Fail
+
+    Build --> Success([CI Pipeline Passed])
+    Validate --> Success
