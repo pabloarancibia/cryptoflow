@@ -266,6 +266,36 @@ Sentiment score: 0.92 (Very Positive)
 
 ---
 
+## Exposing to Network (SSE)
+
+By default, the server runs over STDIO (local process). To expose it over the network (e.g., for remote clients or tunneling), use **Server-Sent Events (SSE)**.
+
+### 1. Start SSE Server
+
+Use the helper script:
+```bash
+./scripts/serve_sse.sh
+```
+This starts the server at `http://0.0.0.0:8000/sse`.
+
+### 2. Connect Remote Client
+
+Configure your client Use the URL:
+- **Server URL**: `http://<your-ip>:8000/sse`
+
+### 3. Expose via Tunnel (ngrok)
+
+If you need to access it from the internet (e.g., a cloud-hosted client):
+
+1. Install ngrok: `snap install ngrok`
+2. Start the tunnel:
+   ```bash
+   ngrok http 8000
+   ```
+3. Use the generated URL (e.g., `https://xyz.ngrok.io/sse`) in your client.
+
+---
+
 ## Troubleshooting
 
 ### Server Not Starting

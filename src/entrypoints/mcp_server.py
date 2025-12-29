@@ -357,6 +357,15 @@ Return ONLY the numeric score, nothing else. No explanation, no text, just the n
 # ============================================================================
 
 if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="CryptoFlow MCP Server")
+    parser.add_argument("--transport", default="stdio", choices=["stdio", "sse"], help="Transport protocol")
+    parser.add_argument("--host", default="0.0.0.0", help="Host for SSE server")
+    parser.add_argument("--port", type=int, default=8000, help="Port for SSE server")
+    
+    args = parser.parse_args()
+    
     print("=== CryptoFlow MCP Server ===", file=sys.stderr)
     print("Architecture: Hexagonal (Ports & Adapters)", file=sys.stderr)
     print("Services initialized:", file=sys.stderr)
@@ -364,7 +373,10 @@ if __name__ == "__main__":
     print(f"  ✓ Place Order Use Case", file=sys.stderr)
     print(f"  {'✓' if services.rag_service else '✗'} RAG Service", file=sys.stderr)
     print(f"  {'✓' if services.trader_agent else '✗'} Trader Agent", file=sys.stderr)
-    print("\nListening for MCP protocol messages...", file=sys.stderr)
     
-    # Run the MCP server
-    mcp.run()
+    if args.transport == "sse":
+        print(f"\nStarting SSE server on {args.host}:{args.port}...", file=sys.stderr)
+        mcp.run(transport="sse", host=args.host, port=args.port)
+    else:
+        print("\nListening for MCP protocol messages (STDIO)...", file=sys.stderr)
+        mcp.run(transport="stdio")
