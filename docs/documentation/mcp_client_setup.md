@@ -159,19 +159,28 @@ The MCP Inspector is a web-based tool for testing MCP servers.
 
 ### Installation
 
+### Helper Script (Recommended)
+
+We provide a helper script that automatically configures the correct Python environment:
+
 ```bash
-npx @modelcontextprotocol/inspector
+./scripts/inspector.sh
 ```
 
-### Usage
+### Manual Usage
 
-1. Start the inspector (it will open in your browser)
-2. Configure the server:
-   - **Command**: `python`
-   - **Args**: `["src/entrypoints/mcp_server.py"]`
-   - **Working Directory**: `/path/to/cryptoflow`
-3. Click "Connect"
-4. Explore resources, tools, and prompts in the UI
+If you prefer to run it manually:
+
+1. Start the inspector:
+   ```bash
+   npx @modelcontextprotocol/inspector <path_to_venv_python> <path_to_server_script>
+   ```
+
+2. Or via the UI:
+   - Start: `npx @modelcontextprotocol/inspector`
+   - Command: `/absolute/path/to/venv/bin/python3`
+   - Args: `["/absolute/path/to/src/entrypoints/mcp_server.py"]`
+   - Env: `PYTHONPATH=/absolute/path/to/project_root`
 
 ---
 
