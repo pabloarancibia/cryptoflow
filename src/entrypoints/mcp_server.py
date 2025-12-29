@@ -17,11 +17,26 @@ Architecture Integration:
 
 import json
 import asyncio
+import logging
+import sys
 from typing import Optional
 from dotenv import load_dotenv
 
+# Configure logging to stderr to avoid interfering with MCP protocol (stdio)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+try:
+    import structlog
+    structlog.configure(
+        processors=[
+            structlog.processors.JSONRenderer()
+        ],
+        logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
+    )
+except ImportError:
+    pass
+
 from fastmcp import FastMCP, Context
-from mcp.types import TextContent, UserMessage
+from mcp.types import TextContent, PromptMessage
 
 # Domain & Application Layer
 from src.domain.exceptions import InvalidSymbolError
@@ -34,8 +49,8 @@ from src.ai.application.rag_service import RAGService
 from src.ai.application.agent_service import TraderAgent
 
 # Infrastructure (for bootstrap only)
-from src.infrastructure.uow_postgres import PostgresUnitOfWork
-from src.infrastructure.adapters.exchange_adapter import MockExchangeAdapter
+from src.infrastructure.uow_postgres import SqlAlchemyUnitOfWork
+from src.infrastructure.adapters.mock_exchange import MockExchangeAdapter
 from src.ai.adapters.vector_store_factory import VectorStoreFactory
 from src.ai.adapters.llm.factory import LLMFactory
 from src.ai.adapters.trading_tools_adapter import TradingToolAdapter
@@ -77,7 +92,7 @@ def bootstrap_mcp() -> MCPServices:
     load_dotenv()
     
     # Infrastructure Layer (Adapters)
-    uow = PostgresUnitOfWork()
+    uow = SqlAlchemyUnitOfWork()
     exchange = MockExchangeAdapter()
     
     # Application Layer (Use Cases)
@@ -121,19 +136,8 @@ mcp = FastMCP("CryptoFlow MCP")
 # Resources allow the AI to "read" data without executing actions.
 # Integrated with GetPortfolioUseCase for real data.
 
-@mcp.resource("portfolio://current")
-async def get_current_portfolio() -> str:
-    """
-    Returns the current portfolio state from the database.
-    
-    Architecture:
-    - Delegates to GetPortfolioUseCase (application layer)
-    - Returns domain data via DTOs
-    - Read-only, no side effects
-    
-    Returns:
-        JSON string representing current holdings from database
-    """
+async def _get_portfolio_data() -> str:
+    """Helper to fetch portfolio data (shared by resource and prompt)."""
     try:
         # Delegate to use case (hexagonal architecture pattern)
         portfolio = await services.portfolio_use_case.execute()
@@ -152,6 +156,21 @@ async def get_current_portfolio() -> str:
             "holdings": {},
             "total_assets": 0
         }, indent=2)
+
+@mcp.resource("portfolio://current")
+async def get_current_portfolio() -> str:
+    """
+    Returns the current portfolio state from the database.
+    
+    Architecture:
+    - Delegates to GetPortfolioUseCase (application layer)
+    - Returns domain data via DTOs
+    - Read-only, no side effects
+    
+    Returns:
+        JSON string representing current holdings from database
+    """
+    return await _get_portfolio_data()
 
 
 # ============================================================================
@@ -228,7 +247,7 @@ async def daily_briefing() -> list:
         List containing UserMessage with intelligent briefing
     """
     # Fetch real portfolio data
-    portfolio_json = await get_current_portfolio()
+    portfolio_json = await _get_portfolio_data() # Use helper instead of resource call
     portfolio_data = json.loads(portfolio_json)
     
     # Base briefing text
@@ -257,7 +276,7 @@ Focus on actionable insights for a crypto trading context."""
             print(f"RAG enhancement failed: {e}")
     
     return [
-        UserMessage(
+        PromptMessage(
             role="user",
             content=TextContent(
                 type="text",
@@ -337,14 +356,14 @@ Return ONLY the numeric score, nothing else. No explanation, no text, just the n
 # ============================================================================
 
 if __name__ == "__main__":
-    print("=== CryptoFlow MCP Server ===")
-    print("Architecture: Hexagonal (Ports & Adapters)")
-    print("Services initialized:")
-    print(f"  ✓ Portfolio Use Case")
-    print(f"  ✓ Place Order Use Case")
-    print(f"  {'✓' if services.rag_service else '✗'} RAG Service")
-    print(f"  {'✓' if services.trader_agent else '✗'} Trader Agent")
-    print("\nListening for MCP protocol messages...")
+    print("=== CryptoFlow MCP Server ===", file=sys.stderr)
+    print("Architecture: Hexagonal (Ports & Adapters)", file=sys.stderr)
+    print("Services initialized:", file=sys.stderr)
+    print(f"  ✓ Portfolio Use Case", file=sys.stderr)
+    print(f"  ✓ Place Order Use Case", file=sys.stderr)
+    print(f"  {'✓' if services.rag_service else '✗'} RAG Service", file=sys.stderr)
+    print(f"  {'✓' if services.trader_agent else '✗'} Trader Agent", file=sys.stderr)
+    print("\nListening for MCP protocol messages...", file=sys.stderr)
     
     # Run the MCP server
     mcp.run()

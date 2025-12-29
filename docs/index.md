@@ -27,8 +27,15 @@ New to CryptoFlow? Start here:
 ### AI & Machine Learning
 
 - **[AI Module](documentation/ai_module.md)**: RAG system and agentic workflows architecture
+- **[MCP Server](documentation/mcp_implementation.md)**: Model Context Protocol integration for AI assistants
+- **[MCP Client Setup](documentation/mcp_client_setup.md)**: Guide to connecting Claude Desktop and other MCP clients
 - **[Semantic Search](documentation/semantic_search_impl.md)**: Implementation of semantic search capabilities
 - **[RAG Optimization](documentation/rag_optimization.md)**: Phase 2 optimizations for RAG system
+
+### Walkthroughs
+
+- **[MCP Server Refactoring](walkthroughs/mcp_server_refactoring.md)**: Step-by-step implementation guide
+- **[MCP Documentation Creation](walkthroughs/mcp_documentation_creation.md)**: Documentation process walkthrough
 
 ### API & Development
 
