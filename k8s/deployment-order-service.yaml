@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: cryptoflow:latest
+          imagePullPolicy: IfNotPresent
+          args: ["order_service"]
+          envFrom:
+            - configMapRef:
+                name: cryptoflow-config
+            - secretRef:
+                name: cryptoflow-secrets
+          ports:
+            - containerPort: 50051 # assuming same default gRPC port, will use different Service ClusterIPs

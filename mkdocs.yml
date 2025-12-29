@@ -26,6 +26,7 @@ nav:
     - Environment Variables: documentation/environment_variables.md
     - API Reference: documentation/api_reference.md
     - Docker Deployment: documentation/docker_deployment.md
+    - Kubernetes Deployment: documentation/k8s_implementation.md
   - Architecture:
     - Hexagonal Architecture: documentation/hexagonal_architecture.md
     - Microservices Theory: documentation/microservices_theory.md
@@ -49,3 +50,4 @@ nav:
     - MCP Documentation Creation: walkthroughs/mcp_documentation_creation.md
   - Wiki:
     - Architecture Evolution (Weeks 1-4): wiki/architecture_evolution.md
+    - Kubernetes Theory: documentation/k8s_theory.md

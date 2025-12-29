@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cryptoflow-config
+data:
+  LOG_LEVEL: "INFO"
+  CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq:5672//"
+  CHROMA_HOST: "chroma"
+  CHROMA_PORT: "8000"
+  POSTGRES_DB: "cryptoflow"
+  REDIS_URL: "redis://redis:6379/0"

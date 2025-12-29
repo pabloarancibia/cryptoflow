@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chroma
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chroma
+  template:
+    metadata:
+      labels:
+        app: chroma
+    spec:
+      containers:
+        - name: chroma
+          image: chromadb/chroma:0.5.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: IS_PERSISTENT
+              value: "TRUE"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chroma
+spec:
+  selector:
+    app: chroma
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP

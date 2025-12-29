@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: cryptoflow:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "main.py", "api"] # Assuming python main.py based on typical python structure, or just direct command if entrypoint allows. Wait, docker-compose says command is 'api'. Let's assume entrypoint handles it.
+          # The USER said: "The Docker image has an entrypoint script that accepts arguments: api, worker..."
+          # So I will use args.
+          args: ["api"]
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: cryptoflow-config
+            - secretRef:
+                name: cryptoflow-secrets
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
