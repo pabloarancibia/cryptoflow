@@ -33,6 +33,8 @@ nav:
     - Diagram Preview: documentation/diagram_preview.md
   - AI & Machine Learning:
     - AI Module: documentation/ai_module.md
+    - MCP Implementation: documentation/mcp_implementation.md
+    - MCP Client Setup: documentation/mcp_client_setup.md
     - Semantic Search: documentation/semantic_search_impl.md
     - RAG Optimization: documentation/rag_optimization.md
     - LLM Tool Calling: documentation/openai_tool_calling.md
@@ -41,7 +43,8 @@ nav:
   - Development:
     - Testing Strategy: documentation/testing_strategy.md
     - Documentation System: documentation/documentation_system.md
+  - Walkthroughs:
+    - MCP Server Refactoring: walkthroughs/mcp_server_refactoring.md
+    - MCP Documentation Creation: walkthroughs/mcp_documentation_creation.md
   - Wiki:
     - Architecture Evolution (Weeks 1-4): wiki/architecture_evolution.md
-  - Project Info:
-    - README: README.md

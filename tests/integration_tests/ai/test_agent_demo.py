@@ -1,5 +1,6 @@
 import pytest
-from src.ai.adapters.llm_adapter import LLMAdapter
+from src.ai.domain.ports import ILLMProvider
+from src.ai.domain.models import ToolCall
 from src.ai.adapters.trading_tools_adapter import TradingToolAdapter
 from src.ai.application.agent_service import TraderAgent
 
@@ -15,18 +16,18 @@ class TestAgentDemoIntegration:
         Verifies that the agent can process a prompt and return a response.
         Mocking backend dependencies to avoid real DB calls.
         """
-        # Mock LLM to return a predictable JSON for trading
-        # checking if we need to mock LLMAdapter provided it acts as port
+        # Mock LLM to return a ToolCall for trading
+        mock_llm = mocker.Mock(spec=ILLMProvider)
+        mock_tool_call = ToolCall(
+            name="execute_trade",
+            arguments={"symbol": "BTC", "side": "buy", "quantity": 1.0}
+        )
+        mock_llm.generate_with_tools.return_value = mock_tool_call
         
-        mock_llm = mocker.Mock(spec=LLMAdapter)
-        mock_llm.generate_text.return_value = '{"tool": "execute_trade", "symbol": "BTC", "side": "buy", "quantity": 1.0}'
-        
-        # Real or Mocked Tool Adapter
-        # Using real adapter but internal methods are mocked if needed
-        # For now, TradingToolAdapter has internal mock logic, so safe to use directly
+        # Real Tool Adapter (has internal mock logic)
         tools = TradingToolAdapter()
         
-        # 2. Agent Execution
+        # Agent Execution
         agent = TraderAgent(llm_provider=mock_llm, trading_tool=tools)
         
         prompt = "Please place a BUY order for 1 BTC"

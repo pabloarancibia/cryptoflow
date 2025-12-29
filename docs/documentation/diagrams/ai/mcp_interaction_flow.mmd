@@ -1,0 +1,43 @@
+sequenceDiagram
+    participant Client as MCP Client<br/>(Claude Desktop)
+    participant MCP as MCP Server<br/>(FastMCP)
+    participant Resource as GetPortfolioUseCase
+    participant Tool as PlaceOrderUseCase
+    participant UoW as UnitOfWork
+    participant DB as PostgreSQL
+    
+    Note over Client,DB: Resource Request (Read-Only)
+    
+    Client->>MCP: Request Resource<br/>portfolio://current
+    activate MCP
+    MCP->>Resource: execute()
+    activate Resource
+    Resource->>UoW: __aenter__()
+    activate UoW
+    UoW->>DB: Query portfolio data
+    DB-->>UoW: Holdings data
+    UoW-->>Resource: Portfolio data
+    deactivate UoW
+    Resource-->>MCP: PortfolioResponse DTO
+    deactivate Resource
+    MCP-->>Client: JSON Response<br/>{holdings, total_assets}
+    deactivate MCP
+    
+    Note over Client,DB: Tool Invocation (State-Changing)
+    
+    Client->>MCP: Invoke Tool<br/>place_order(BTC, BUY, 1.5)
+    activate MCP
+    MCP->>Tool: execute(OrderCreate DTO)
+    activate Tool
+    Tool->>UoW: __aenter__()
+    activate UoW
+    Tool->>UoW: orders.add(Order)
+    Tool->>UoW: commit()
+    UoW->>DB: INSERT order
+    DB-->>UoW: Success
+    UoW-->>Tool: Committed
+    deactivate UoW
+    Tool-->>MCP: OrderResponse DTO
+    deactivate Tool
+    MCP-->>Client: Success Message<br/>Order ID: xxx
+    deactivate MCP

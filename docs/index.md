@@ -6,9 +6,9 @@ CryptoFlow is a modular, high-performance trading simulation system designed to 
 
 New to CryptoFlow? Start here:
 
-1. **[README](../README.md)**: Complete setup instructions and quick start guide
-2. **[Development Guide](documentation/development_guide.md)**: Development workflow and best practices
-3. **[Environment Variables](documentation/environment_variables.md)**: Configuration guide
+1. **[Development Guide](documentation/development_guide.md)**: Development workflow and best practices
+2. **[Environment Variables](documentation/environment_variables.md)**: Configuration guide
+3. **[API Reference](documentation/api_reference.md)**: Complete API endpoint documentation
 
 ## 📚 Documentation Sections
 
@@ -46,7 +46,7 @@ New to CryptoFlow? Start here:
 
 ## 🎯 Quick Links
 
-- **Main README**: [README.md](../README.md)
-- **Project Structure**: See [README.md](../README.md#-project-structure-clean-architecture)
+- **Architecture**: [Hexagonal Architecture](documentation/hexagonal_architecture.md)
+- **AI & ML**: [AI Module](documentation/ai_module.md) | [MCP Implementation](documentation/mcp_implementation.md)
 - **API Endpoints**: [API Reference](documentation/api_reference.md)
 - **Running Tests**: [Testing Strategy](documentation/testing_strategy.md)

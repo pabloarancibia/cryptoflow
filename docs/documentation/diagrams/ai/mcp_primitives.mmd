@@ -1,0 +1,41 @@
+graph LR
+    subgraph "MCP Primitives"
+        R["📖 Resources<br/>Read-Only Data"]
+        T["🔧 Tools<br/>State-Changing Actions"]
+        P["📝 Prompts<br/>AI Templates"]
+        S["🧠 Sampling<br/>Inversion of Control"]
+    end
+    
+    subgraph "CryptoFlow Implementation"
+        R1["portfolio://current<br/>GetPortfolioUseCase"]
+        T1["place_order<br/>PlaceOrderUseCase"]
+        T2["analyze_sentiment<br/>Client LLM Sampling"]
+        P1["daily_briefing<br/>RAGService Enhanced"]
+    end
+    
+    subgraph "Hexagonal Architecture"
+        UC["Use Cases<br/>(Application Layer)"]
+        DE["Domain Entities<br/>(Domain Layer)"]
+        AD["Adapters<br/>(Infrastructure)"]
+    end
+    
+    R -.->|Implements| R1
+    T -.->|Implements| T1
+    T -.->|Implements| T2
+    P -.->|Implements| P1
+    
+    R1 -->|Delegates to| UC
+    T1 -->|Delegates to| UC
+    P1 -->|Uses| UC
+    
+    UC -->|Creates/Returns| DE
+    UC -->|Uses| AD
+    
+    style R fill:#e8f5e9,stroke:#2e7d32
+    style T fill:#fff3e0,stroke:#e65100
+    style P fill:#e3f2fd,stroke:#1565c0
+    style S fill:#f3e5f5,stroke:#6a1b9a
+    style R1 fill:#c8e6c9,stroke:#2e7d32
+    style T1 fill:#ffe0b2,stroke:#e65100
+    style T2 fill:#ffe0b2,stroke:#e65100
+    style P1 fill:#bbdefb,stroke:#1565c0

@@ -1,0 +1,57 @@
+graph TB
+    subgraph "External Client"
+        Client["MCP Client<br/>(Claude Desktop, Custom Client)"]
+    end
+    
+    subgraph "Entrypoint Layer"
+        MCP["MCP Server<br/>FastMCP Protocol<br/>src/entrypoints/mcp_server.py"]
+    end
+    
+    subgraph "Application Layer"
+        GetPort["GetPortfolioUseCase<br/>Retrieve Holdings"]
+        PlaceOrd["PlaceOrderUseCase<br/>Execute Trades"]
+        RAG["RAGService<br/>Documentation Search"]
+        Agent["TraderAgent<br/>AI Trading Assistant"]
+    end
+    
+    subgraph "Domain Layer"
+        Order["Order Entity"]
+        Portfolio["Portfolio DTO"]
+        Instrument["FinancialInstrument"]
+    end
+    
+    subgraph "Infrastructure Layer"
+        UoW["PostgresUnitOfWork<br/>Database Access"]
+        Exchange["ExchangeAdapter<br/>Market Data"]
+        VectorDB["ChromaDB<br/>Vector Store"]
+        LLM["LLM Provider<br/>Google/OpenAI"]
+    end
+    
+    Client -->|"MCP Protocol<br/>(Resources, Tools, Prompts)"| MCP
+    
+    MCP -->|"Resource: portfolio://current"| GetPort
+    MCP -->|"Tool: place_order"| PlaceOrd
+    MCP -->|"Prompt: daily_briefing"| RAG
+    MCP -->|"Tool: analyze_sentiment<br/>(Sampling)"| Client
+    
+    GetPort -->|Uses| UoW
+    GetPort -->|Returns| Portfolio
+    
+    PlaceOrd -->|Uses| UoW
+    PlaceOrd -->|Uses| Exchange
+    PlaceOrd -->|Creates| Order
+    
+    RAG -->|Queries| VectorDB
+    RAG -->|Generates| LLM
+    
+    Agent -->|Uses| LLM
+    
+    UoW -.->|Persists| Order
+    
+    style MCP fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Client fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style GetPort fill:#fff4e6,stroke:#e65100
+    style PlaceOrd fill:#fff4e6,stroke:#e65100
+    style RAG fill:#fff4e6,stroke:#e65100
+    style Order fill:#f3e5f5,stroke:#4a148c
+    style Portfolio fill:#f3e5f5,stroke:#4a148c

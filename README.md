@@ -11,6 +11,7 @@ CryptoFlow is a modular, high-performance trading simulation system designed to 
 - **Event-Driven**: Asynchronous task processing using Celery, RabbitMQ/Redis, and Observer patterns
 - **Cloud Native**: Fully containerized with Docker Compose and ready for Kubernetes deployment
 - **AI-Powered**: RAG (Retrieval-Augmented Generation) system for documentation search and agentic trading workflows
+- **MCP Server**: Model Context Protocol integration enabling AI assistants (Claude, etc.) to interact with the trading platform
 - **Microservices Ready**: gRPC-based microservices architecture for Market Data and Order services
 
 ## 🛠 Tech Stack
@@ -23,6 +24,7 @@ CryptoFlow is a modular, high-performance trading simulation system designed to 
 - **Task Queue**: Celery with RabbitMQ/Redis
 - **Vector Database**: ChromaDB (for RAG)
 - **AI/ML**: OpenAI API, Google Generative AI, Sentence Transformers
+- **MCP**: FastMCP (Model Context Protocol)
 - **RPC**: gRPC with Protocol Buffers
 - **Infrastructure**: Docker, Docker Compose
 - **Documentation**: MkDocs with Material theme
@@ -185,6 +187,8 @@ Then open `http://localhost:8000` in your browser.
 - **[Architecture Overview](docs/documentation/hexagonal_architecture.md)**: Clean Architecture and Hexagonal Architecture patterns
 - **[Microservices Guide](docs/documentation/microservices_theory.md)**: Theory and implementation of microservices with gRPC
 - **[AI Module](docs/documentation/ai_module.md)**: RAG system and agentic workflows
+- **[MCP Server](docs/documentation/mcp_implementation.md)**: Model Context Protocol integration for AI assistants
+- **[MCP Client Setup](docs/documentation/mcp_client_setup.md)**: Guide to connecting Claude Desktop and other MCP clients
 - **[API Reference](docs/documentation/api_reference.md)**: Complete API endpoint documentation
 - **[Testing Strategy](docs/documentation/testing_strategy.md)**: Testing approach and best practices
 - **[Development Guide](docs/documentation/development_guide.md)**: Development workflow and guidelines

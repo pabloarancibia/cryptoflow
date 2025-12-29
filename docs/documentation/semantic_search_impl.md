@@ -54,7 +54,7 @@ Required packages in `requirements.txt`:
 
 ## Usage
 
-See the [AI Module](../ai_module.md) page for general usage instructions.
+See the [AI Module](ai_module.md) page for general usage instructions.
 
 ## Verification
 
