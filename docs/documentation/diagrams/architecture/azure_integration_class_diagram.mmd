@@ -1,0 +1,23 @@
+classDiagram
+    package Domain {
+        class ILLMProvider {
+            <<interface>>
+        }
+        class IVectorStore {
+            <<interface>>
+        }
+    }
+
+    package Infrastructure {
+        class AzureSemanticKernelAdapter {
+            -kernel: Kernel
+            +generate_with_tools()
+        }
+        class AzureSearchAdapter {
+            -client: SearchClient
+            +query()
+        }
+    }
+
+    ILLMProvider <|-- AzureSemanticKernelAdapter
+    IVectorStore <|-- AzureSearchAdapter

@@ -1,0 +1,24 @@
+flowchart TD
+    subgraph Application_Layer ["Application Layer"]
+        User(("User")) --> Agent["TraderAgent"]
+        Agent -- "1. Invokes" --> SK_Adapter["AzureSemanticKernelAdapter"]
+    end
+
+    subgraph Adapter_Layer_Azure ["Azure Adapter Layer"]
+        SK_Adapter -- "Uses SDK" --> Kernel{"Semantic Kernel"}
+        
+        subgraph SK_Internals ["Kernel Internals"]
+            Kernel -- "Orchestrates" --> Planner["Function Calling / Planner"]
+            Kernel -- "Manages" --> Memory["Memory Connector"]
+        end
+    end
+
+    subgraph Infrastructure_Azure ["Azure Cloud Resources"]
+        Planner -- "2. Reasoning" --> AzureOpenAI["Azure OpenAI Service"]
+        Memory -- "3. Hybrid Search" --> AzureSearch["Azure AI Search"]
+        Planner -- "4. Executes Plugin" --> Tool["TradingToolAdapter (Wrapped as Plugin)"]
+    end
+
+    style SK_Adapter fill:#ccf,stroke:#333,stroke-width:2px
+    style Kernel fill:#acf,stroke:#333,stroke-width:4px
+    style AzureSearch fill:#bfb,stroke:#333

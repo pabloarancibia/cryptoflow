@@ -34,8 +34,10 @@ nav:
   - AI & Machine Learning:
     - AI Module: documentation/ai_module.md
     - Semantic Search: documentation/semantic_search_impl.md
-    - RAG Optimization (Phase 2): documentation/rag_optimization.md
-    - LLM Tool Calling (Phase 3): documentation/openai_tool_calling.md
+    - RAG Optimization: documentation/rag_optimization.md
+    - LLM Tool Calling: documentation/openai_tool_calling.md
+    - Azure AI Integration: documentation/azure_integration.md
+    - Azure Architecture: documentation/azure_architecture.md
   - Development:
     - Testing Strategy: documentation/testing_strategy.md
     - Documentation System: documentation/documentation_system.md
