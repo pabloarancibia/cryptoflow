@@ -42,18 +42,17 @@ RUN useradd -m -u 1000 appuser
 WORKDIR /app
 
 # Copy virtual environment from builder
-COPY --from=builder /app/venv /app/venv
+COPY --from=builder --chown=appuser:appuser /app/venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
 
 # Copy source code and config
-COPY src /app/src
-COPY main.py /app/main.py
-COPY scripts /app/scripts
-COPY alembic.ini /app/alembic.ini
+COPY --chown=appuser:appuser src /app/src
+COPY --chown=appuser:appuser main.py /app/main.py
+COPY --chown=appuser:appuser scripts /app/scripts
+COPY --chown=appuser:appuser alembic.ini /app/alembic.ini
 
-# Set correct ownership
-RUN chown -R appuser:appuser /app && \
-    chmod +x /app/scripts/entrypoint.sh
+# Set correct permissions
+RUN chmod +x /app/scripts/entrypoint.sh
 
 # Switch to non-root user
 USER appuser
@@ -64,7 +63,7 @@ ENV PYTHONPATH=/app
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Default Entrypoint
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]
