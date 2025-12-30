@@ -41,7 +41,15 @@ New to CryptoFlow? Start here:
 
 - **[API Reference](documentation/api_reference.md)**: Complete API endpoint documentation with examples
 - **[Development Guide](documentation/development_guide.md)**: Development workflow, testing, and contribution guidelines
+
 - **[Environment Variables](documentation/environment_variables.md)**: Configuration and environment setup
+
+### Infrastructure & DevOps
+
+- **[Azure Architecture](documentation/azure_architecture.md)**: Azure cloud infrastructure and AI integration
+- **[Terraform Guide](documentation/terraform_implementation.md)**: Infrastructure provisioning guide
+- **[CI Pipeline](documentation/ci_pipeline.md)**: GitHub Actions workflow explanation
+- **[Compute Strategy](documentation/compute_architecture_strategy.md)**: Whitepaper on Serverless vs Kubernetes
 
 ### Testing & Quality
 
@@ -56,4 +64,6 @@ New to CryptoFlow? Start here:
 - **Architecture**: [Hexagonal Architecture](documentation/hexagonal_architecture.md)
 - **AI & ML**: [AI Module](documentation/ai_module.md) | [MCP Implementation](documentation/mcp_implementation.md)
 - **API Endpoints**: [API Reference](documentation/api_reference.md)
+
+- **Infrastructure**: [Azure Architecture](documentation/azure_architecture.md) | [Terraform](documentation/terraform_implementation.md)
 - **Running Tests**: [Testing Strategy](documentation/testing_strategy.md)
