@@ -1,6 +1,10 @@
 # CryptoFlow — High-Frequency Trading Engine
 
-[![Documentation](https://img.shields.io/badge/docs-live-blue.svg)](https://pabloarancibia.github.io/cryptoflow/)
+<div align="center">
+
+[![Documentation](https://img.shields.io/badge/docs-live-brightgreen?style=for-the-badge&logo=read-the-docs&logoColor=white)](https://pabloarancibia.github.io/cryptoflow/)
+
+</div>
 
 
 CryptoFlow is a modular, high-performance trading simulation system designed to demonstrate advanced Software Engineering principles in Python. The project emphasizes Clean Architecture, Gang of Four (GoF) Design Patterns, and strict Object-Oriented Programming (OOP) to create a scalable, transactional trading engine.
