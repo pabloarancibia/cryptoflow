@@ -6,6 +6,10 @@ theme:
     primary: indigo
     accent: cyan
 
+site_url: https://pabloarancibia.github.io/cryptoflow/
+repo_name: pabloarancibia/cryptoflow
+repo_url: https://github.com/pabloarancibia/cryptoflow
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
