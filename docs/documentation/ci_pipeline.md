@@ -21,13 +21,13 @@ This job is the first line of defense. It focuses on code correctness and qualit
 - **Linting**: Uses `ruff` for extremely fast Python linting.
 - **Testing**: Runs unit tests using `pytest` located in `tests/unit_tests`.
 
-### 2. Docker Build (Heavy)
-This job verifies that the application can be containerized successfully.
+### 2. Docker Validation (Linting)
+This job ensures that the Dockerfile follows best practices and is syntactically correct.
 
 - **Dependency**: Runs only if `Quality Control` passes.
-- **Optimization**: Utilizes GitHub Actions Cache to cache Docker layers, significantly reducing build times for subsequent runs.
-- **Buildx**: Uses Docker Buildx for advanced build capabilities.
-- **No Push**: Currently, the image is built to verify correctness but is not pushed to a registry.
+- **Tool**: Uses `hadolint` for static analysis of the Dockerfile.
+- **Mock Build**: Due to GitHub Free Tier disk limitations (~14GB), the full Docker build is mocked in the CI environment. The pipeline validates the *definition* rather than the *artifact*.
+- **Self-Hosted Ready**: The pipeline structure is consistent with a full build, allowing for easy enabling of the build step on self-hosted runners.
 
 ### 3. Kubernetes Validation (Static Analysis)
 This job ensures that the Kubernetes manifests are syntactically correct.

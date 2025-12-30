@@ -291,8 +291,8 @@ This will provision:
 The project includes a robust GitHub Actions pipeline (`.github/workflows/ci.yml`) that:
 
 1. **Quality Control**: Runs `ruff`, `mypy`, and `pytest` on every push.
-2. **Build**: Builds the "Universal Docker Image" if tests pass.
-3. **Validation**: Validates Kubernetes manifests.
+2. **Infrastructure Validation**: Linting Dockerfiles with `hadolint` and validating K8s manifests with `kubeconform`.
+3. **Build Strategy**: Due to GitHub Free Tier disk limitations, the full Docker Build is mocked in CI, but designed to run on Self-Hosted runners.
 
 See [CI Pipeline Documentation](docs/documentation/ci_pipeline.md) for more details.
 
