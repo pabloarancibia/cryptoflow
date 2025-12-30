@@ -9,8 +9,9 @@ CryptoFlow is a modular, high-performance trading simulation system designed to 
 - **Pluggable Strategies**: Strategy Pattern implementation allowing hot-swapping of algorithms (RSI, Moving Average)
 - **Resilient Architecture**: Transactional safety via custom Context Managers and transactional rollbacks
 - **Event-Driven**: Asynchronous task processing using Celery, RabbitMQ/Redis, and Observer patterns
-- **Cloud Native**: Fully containerized with Docker Compose and ready for Kubernetes deployment
+- **Cloud Native**: Fully containerized with Docker Compose and production-ready for Azure Kubernetes Service (AKS)
 - **AI-Powered**: RAG (Retrieval-Augmented Generation) system for documentation search and agentic trading workflows
+- **Azure Integration**: Enterprise-grade AI integration with Azure OpenAI and Azure AI Search
 - **MCP Server**: Model Context Protocol integration enabling AI assistants (Claude, etc.) to interact with the trading platform
 - **Microservices Ready**: gRPC-based microservices architecture for Market Data and Order services
 
@@ -26,7 +27,9 @@ CryptoFlow is a modular, high-performance trading simulation system designed to 
 - **AI/ML**: OpenAI API, Google Generative AI, Sentence Transformers
 - **MCP**: FastMCP (Model Context Protocol)
 - **RPC**: gRPC with Protocol Buffers
-- **Infrastructure**: Docker, Docker Compose
+- **Infrastructure**: Docker, Docker Compose, Terraform
+- **Cloud Provider**: Microsoft Azure (AKS, ACR, Azure OpenAI)
+- **CI/CD**: GitHub Actions
 - **Documentation**: MkDocs with Material theme
 
 ## 📂 Project Structure (Clean Architecture)
@@ -52,6 +55,9 @@ cryptoflow/
 ├── protos/                   # Protocol Buffer definitions
 ├── migrations/               # Alembic database migrations
 ├── data/                     # Local data storage (ignored by git)
+├── infra/                  # Terraform Infrastructure as Code (Azure)
+├── .github/
+│   └── workflows/          # CI/CD Pipelines (GitHub Actions)
 ├── docker-compose.yml        # Docker services configuration
 ├── mkdocs.yml                # MkDocs configuration
 ├── requirements.txt          # Python dependencies
@@ -192,6 +198,11 @@ Then open `http://localhost:8000` in your browser.
 - **[API Reference](docs/documentation/api_reference.md)**: Complete API endpoint documentation
 - **[Testing Strategy](docs/documentation/testing_strategy.md)**: Testing approach and best practices
 - **[Development Guide](docs/documentation/development_guide.md)**: Development workflow and guidelines
+- **[Azure Architecture](docs/documentation/azure_architecture.md)**: Azure cloud infrastructure and AI integration
+- **[Terraform Guide](docs/documentation/terraform_implementation.md)**: Infrastructure provisioning guide
+- **[CI Pipeline](docs/documentation/ci_pipeline.md)**: GitHub Actions workflow explanation
+- **[Compute Strategy](docs/documentation/compute_architecture_strategy.md)**: Whitepaper on Serverless vs Kubernetes
+
 
 ## 🧪 Testing
 
@@ -237,15 +248,50 @@ See [API Reference](docs/documentation/api_reference.md) for detailed endpoint d
 - [x] **Week 3**: Repository Pattern, Database Session Manager, Redis Caching
 - [x] **Week 4**: Observer Pattern, Celery/RabbitMQ integration, Distributed Locking
 - [x] **Week 5**: Docker Compose containerization
+- [x] **Week 6**: Kubernetes deployment configurations (Manifests & Helm)
 - [x] **Week 7**: RAG system, Trader Agent with Tool Use Pattern, Async integration
+- [x] **Infrastructure**: Terraform provisioning for Azure (AKS, ACR)
+- [x] **CI/CD**: GitHub Actions pipeline for testing and building Universal Image
 
 ### 🚧 In Progress / Planned
 
-- [ ] **Week 6**: Kubernetes deployment configurations
-- [ ] CI/CD pipelines (GitHub Actions)
-- [ ] Terraform infrastructure provisioning
 - [ ] Blue/Green deployment strategy
 - [ ] Additional exchange adapters (Binance, Coinbase)
+
+## ☁️ Azure Cloud Deployment
+
+The project is designed to be deployed on Microsoft Azure using Terraform.
+
+### Prerequisites
+
+- Azure CLI (`az login`)
+- Terraform installed
+- `kubectl` installed
+
+### Provisioning Infrastructure
+
+Move to the infrastructure directory and apply the Terraform configuration:
+
+```bash
+cd infra
+terraform init
+terraform apply
+```
+
+This will provision:
+- **Resource Group**: `rg-cryptoflow-prod`
+- **Azure Container Registry (ACR)**: For storing Docker images
+- **Azure Kubernetes Service (AKS)**: For running the microservices
+
+### CI/CD Pipeline
+
+The project includes a robust GitHub Actions pipeline (`.github/workflows/ci.yml`) that:
+
+1. **Quality Control**: Runs `ruff`, `mypy`, and `pytest` on every push.
+2. **Build**: Builds the "Universal Docker Image" if tests pass.
+3. **Validation**: Validates Kubernetes manifests.
+
+See [CI Pipeline Documentation](docs/documentation/ci_pipeline.md) for more details.
 
 ## 🛠️ Development
 
