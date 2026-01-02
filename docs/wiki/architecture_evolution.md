@@ -101,7 +101,32 @@ By Week 3, we transitioned from an in-memory prototype to a robust **Layered Arc
 
 ---
 
-## 7. Future Roadmap
-*   **K8s**: Full Kubernetes deployment.
-*   **LLM Upgrade**: Replace Heuristic Agent with GPT-4o.
-*   **Monitoring**: Prometheus & Grafana dashboards.
+## 8. Week 8+: Cloud Native Transformation (Infrastructure)
+*   **Goal**: Production-ready deployment on Public Cloud.
+*   **Infrastructure as Code (IaC)**:
+    *   Adopted **Terraform** to provision Azure resources (AKS, ACR, Resource Groups).
+    *   Benefit: Immutable infrastructure and state management.
+*   **Kubernetes (K8s)**:
+    *   Transitioned from Docker Compose to native K8s Manifests.
+    *   Implemented `Deployments` for stateless services and `StatefulSets` for DBs (in dev).
+    *   Defined `Services` (ClusterIP, LoadBalancer) for internal/external networking.
+*   **CI/CD**:
+    *   Built a robust **GitHub Actions** pipeline.
+    *   Stages: Quality Control (Lint/Test) -> Docker Build -> K8s Validation.
+    *   Impact: Automated gatekeeping for code quality.
+
+---
+
+## 9. Advanced Integrations (MCP)
+*   **Model Context Protocol (MCP)**:
+    *   Implemented an MCP-compliant server.
+    *   Enables external AI Agents (like Claude Desktop) to connect directly to CryptoFlow tools (`place_order`, `get_portfolio`).
+    *   Significance: Standardized interface for AI-to-System communication.
+
+---
+
+## 10. Future Roadmap
+*   **Service Mesh**: Implement Istio for advanced traffic management (Canary/Blue-Green).
+*   **LLM Upgrade**: Replace Heuristic Agent with GPT-4o via Azure OpenAI.
+*   **Monitoring**: Prometheus & Grafana dashboards for K8s metrics.
+*   **Security**: Implement mTLS and Key Vault integration.
