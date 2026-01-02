@@ -2,7 +2,10 @@
 
 <div align="center">
 
-[![Documentation](https://img.shields.io/badge/docs-live-brightgreen?style=for-the-badge&logo=read-the-docs&logoColor=white)](https://pabloarancibia.github.io/cryptoflow/)
+<a href="https://pabloarancibia.github.io/cryptoflow/" target="_blank">
+  <img src="https://img.shields.io/badge/docs-live-brightgreen?style=for-the-badge&logo=read-the-docs&logoColor=white" alt="Documentation"/>
+</a>
+&nbsp; 👈 <b>Click here for the Live Docs!</b>
 
 </div>
 
